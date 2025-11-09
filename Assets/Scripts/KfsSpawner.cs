@@ -1,21 +1,30 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class KfsSpawner : MonoBehaviour
 {
-    private const int TotalSpot = 12;
+    const int TotalSpot = 12;
 
-    private const int MaxRealKfsCount = 4,
+    const int MaxRealKfsCount = 4,
         MaxFakeKfsCount = 1,
         MaxR1KfsCount = 3;
 
-    private const float PositionVariation = 0.1f;
+    const float PositionVariation = 0.1f;
 
-    [SerializeField] private Transform _realKfs;
-    [SerializeField] private Transform _fakeKfs;
-    [SerializeField] private Transform _r1Kfs;
+    [SerializeField] Transform _realKfs;
+    [SerializeField] Transform _fakeKfs;
+    [SerializeField] Transform _r1Kfs;
+
+    List<Transform> _placedRealKfss = new();
+    List<Transform> _placedFakeKfss = new();
+    List<Transform> _placedR1Kfss = new();
+
+    public IReadOnlyList<Transform> PlacedRealKfss => _placedRealKfss;
+    public IReadOnlyList<Transform> PlacedFakeKfss => _placedFakeKfss;
+    public IReadOnlyList<Transform> PlacedR1Kfss => _placedR1Kfss;
 
     void Start()
     {
@@ -27,22 +36,24 @@ public class KfsSpawner : MonoBehaviour
         var placeOrder = Enumerable.Range(0, TotalSpot).ToArray();
         RandomExt.Shuffle(placeOrder, 3, TotalSpot); // First 3 row must always be placed
 
-        var placedR1Kfs = 0;
-        var placedRealKfs = 0;
-        var placedFakeKfs = 0;
-
         for (var order = 0; order < TotalSpot; order++)
         {
-            if (placedR1Kfs >= MaxR1KfsCount && placedRealKfs >= MaxRealKfsCount && placedFakeKfs >= MaxFakeKfsCount)
+            int r1Count = _placedR1Kfss.Count;
+            int realCount = _placedRealKfss.Count;
+            int fakeCount = _placedFakeKfss.Count;
+
+            if (r1Count >= MaxR1KfsCount
+                && realCount >= MaxRealKfsCount
+                && _placedFakeKfss.Count >= MaxFakeKfsCount)
                 break;
 
             int i = placeOrder[order];
             int x = i % 3;
             int y = i / 3;
 
-            bool r1 = (x == 0 || x == 2) && placedR1Kfs < MaxR1KfsCount;
-            bool real = placedRealKfs < MaxRealKfsCount;
-            bool fake = y != 0 && placedFakeKfs < MaxFakeKfsCount;
+            bool r1 = (x == 0 || x == 2) && r1Count < MaxR1KfsCount;
+            bool real = realCount < MaxRealKfsCount;
+            bool fake = y != 0 && fakeCount < MaxFakeKfsCount;
 
             if (!r1 && !real && !fake)
                 continue;
@@ -52,7 +63,7 @@ public class KfsSpawner : MonoBehaviour
             while (!mask[index])
                 index = (index + 1) % 3;
 
-            Transform[] kfss = { _r1Kfs, _realKfs.GetChild(placedRealKfs), _fakeKfs.GetChild(placedFakeKfs) };
+            Transform[] kfss = { _r1Kfs, _realKfs.GetChild(realCount), _fakeKfs.GetChild(fakeCount) };
             var spawner = transform.GetChild(i);
             var cloned = Instantiate(kfss[index]);
             cloned.localPosition = new Vector3(
@@ -66,16 +77,17 @@ public class KfsSpawner : MonoBehaviour
             switch (index)
             {
                 case 0:
-                    placedR1Kfs++; break;
+                    _placedR1Kfss.Add(cloned);
+                    break;
                 case 1:
-                    placedRealKfs++; break;
+                    _placedRealKfss.Add(cloned);
+                    break;
                 case 2:
-                    placedFakeKfs++; break;
+                    _placedFakeKfss.Add(cloned);
+                    break;
                 default:
                     throw new Exception("Should not reach");
             }
         }
-
-        Debug.Log($"{placedR1Kfs} {placedRealKfs} {placedFakeKfs}");
     }
 }

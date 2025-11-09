@@ -4,18 +4,18 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class Movement : MonoBehaviour
 {
-    [SerializeField] private float _speed = 1f;
-    [SerializeField] private float _sensitivity = 1f;
-    [SerializeField] private float _gravity = 10f;
+    [SerializeField] float _speed = 1f;
+    [SerializeField] float _sensitivity = 1f;
+    [SerializeField] float _gravity = 10f;
 
-    private InputAction _moveAction, _lookAction, _pauseAction;
-    private CharacterController _controller;
-    private Transform _camera;
+    InputAction _moveAction, _lookAction, _pauseAction;
+    CharacterController _controller;
+    Transform _camera;
 
-    private Vector2 _axis;
-    private bool _paused;
+    Vector2 _axis;
+    bool _paused;
 
-    private Vector2 Axis
+    Vector2 Axis
     {
         get => _axis;
         set
@@ -27,7 +27,7 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private bool Paused
+    bool Paused
     {
         get => _paused;
         set
