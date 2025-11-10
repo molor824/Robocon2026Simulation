@@ -11,7 +11,7 @@ public class LabelGenerator : MonoBehaviour
     Rect? CreateLabel(Transform kfs)
     {
         var offset = transform.position - kfs.position;
-        var hit = Physics.Raycast(transform.position, offset.normalized, offset.magnitude, 1);
+        var hit = Physics.Raycast(kfs.position, offset.normalized, offset.magnitude, 1);
 
         if (hit) return null;
 
@@ -44,29 +44,64 @@ public class LabelGenerator : MonoBehaviour
 
         return Rect.MinMaxRect(xmin, ymin, xmax, ymax);
     }
-    IEnumerable<Rect> RealKfsLabel(KfsSpawner spawner)
+    IEnumerable<Rect> RealLabels(KfsSpawner spawner)
     {
-        foreach (var kfs in spawner.PlacedRealKfss)
+        foreach (var label in spawner.PlacedRealKfss.Select(kfs => CreateLabel(kfs)).Where(label => label.HasValue))
         {
-            var label = CreateLabel(kfs);
-            if (label.HasValue)
-                yield return label.Value;
+            yield return label.Value;
         }
+    }
+    IEnumerable<Rect> FakeLabels(KfsSpawner spawner)
+    {
+        foreach (var label in spawner.PlacedFakeKfss.Select(kfs => CreateLabel(kfs)).Where(label => label.HasValue))
+        {
+            yield return label.Value;
+        }
+    }
+    IEnumerable<Rect> R1Labels(KfsSpawner spawner)
+    {
+        foreach (var label in spawner.PlacedR1Kfss.Select(kfs => CreateLabel(kfs)).Where(label => label.HasValue))
+        {
+            yield return label.Value;
+        }
+    }
+    static Rect ToGuiCoord(Rect rect)
+    {
+        var position = rect.position;
+        var size = rect.size;
+        return new(
+            position.x, Screen.height - size.y - position.y, size.x, size.y
+        );
     }
     void OnGUI()
     {
-        List<Rect> labels = new();
+        List<Rect> realLabels = new();
+        List<Rect> fakeLabels = new();
+        List<Rect> r1Labels = new();
         if (_redSpawner != null)
-            labels.AddRange(RealKfsLabel(_redSpawner));
-        if (_blueSpawner != null)
-            labels.AddRange(RealKfsLabel(_blueSpawner));
-
-        foreach (var label in labels)
         {
-            EditorGUI.DrawRect(
-                new(new Vector2(0, Screen.height - label.size.y)
-                    + Vector2.Scale(label.position, new(1, -1)), label.size),
-                new(0, 1, 0, 0.5f));
+            realLabels.AddRange(RealLabels(_redSpawner));
+            fakeLabels.AddRange(FakeLabels(_redSpawner));
+            r1Labels.AddRange(R1Labels(_redSpawner));
+        }
+        if (_blueSpawner != null)
+        {
+            realLabels.AddRange(RealLabels(_blueSpawner));
+            fakeLabels.AddRange(FakeLabels(_blueSpawner));
+            r1Labels.AddRange(R1Labels(_blueSpawner));
+        }
+
+        foreach (var label in realLabels)
+        {
+            EditorGUI.DrawRect(ToGuiCoord(label), new(0, 1, 0, 0.4f));
+        }
+        foreach (var label in fakeLabels)
+        {
+            EditorGUI.DrawRect(ToGuiCoord(label), new(1, 0, 0, 0.4f));
+        }
+        foreach (var label in r1Labels)
+        {
+            EditorGUI.DrawRect(ToGuiCoord(label), new(0, 0, 1, 0.4f));
         }
     }
 }
