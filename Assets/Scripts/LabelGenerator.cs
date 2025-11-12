@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class LabelGenerator : MonoBehaviour
 {
-    [SerializeField] KfsSpawner _redSpawner, _blueSpawner;
+    public List<Kfs> Kfss = new();
 
     Rect? CreateLabel(Transform kfs)
     {
@@ -44,27 +44,6 @@ public class LabelGenerator : MonoBehaviour
 
         return Rect.MinMaxRect(xmin, ymin, xmax, ymax);
     }
-    IEnumerable<Rect> RealLabels(KfsSpawner spawner)
-    {
-        foreach (var label in spawner.PlacedRealKfss.Select(kfs => CreateLabel(kfs)).Where(label => label.HasValue))
-        {
-            yield return label.Value;
-        }
-    }
-    IEnumerable<Rect> FakeLabels(KfsSpawner spawner)
-    {
-        foreach (var label in spawner.PlacedFakeKfss.Select(kfs => CreateLabel(kfs)).Where(label => label.HasValue))
-        {
-            yield return label.Value;
-        }
-    }
-    IEnumerable<Rect> R1Labels(KfsSpawner spawner)
-    {
-        foreach (var label in spawner.PlacedR1Kfss.Select(kfs => CreateLabel(kfs)).Where(label => label.HasValue))
-        {
-            yield return label.Value;
-        }
-    }
     static Rect ToGuiCoord(Rect rect)
     {
         var position = rect.position;
@@ -75,33 +54,31 @@ public class LabelGenerator : MonoBehaviour
     }
     void OnGUI()
     {
-        List<Rect> realLabels = new();
-        List<Rect> fakeLabels = new();
-        List<Rect> r1Labels = new();
-        if (_redSpawner != null)
+        foreach (var kfs in Kfss)
         {
-            realLabels.AddRange(RealLabels(_redSpawner));
-            fakeLabels.AddRange(FakeLabels(_redSpawner));
-            r1Labels.AddRange(R1Labels(_redSpawner));
-        }
-        if (_blueSpawner != null)
-        {
-            realLabels.AddRange(RealLabels(_blueSpawner));
-            fakeLabels.AddRange(FakeLabels(_blueSpawner));
-            r1Labels.AddRange(R1Labels(_blueSpawner));
-        }
-
-        foreach (var label in realLabels)
-        {
-            EditorGUI.DrawRect(ToGuiCoord(label), new(0, 1, 0, 0.4f));
-        }
-        foreach (var label in fakeLabels)
-        {
-            EditorGUI.DrawRect(ToGuiCoord(label), new(1, 0, 0, 0.4f));
-        }
-        foreach (var label in r1Labels)
-        {
-            EditorGUI.DrawRect(ToGuiCoord(label), new(0, 0, 1, 0.4f));
+            var rect = CreateLabel(kfs.transform);
+            if (rect.HasValue)
+            {
+                Color color;
+                if (kfs.KfsTeam == Kfs.Team.Red)
+                {
+                    color = Color.red;
+                }
+                else
+                {
+                    color = Color.blue;
+                }
+                if (kfs.KfsType == Kfs.Type.Fake)
+                {
+                    color = Color.black;
+                }
+                else if (kfs.KfsType == Kfs.Type.R1)
+                {
+                    color = Color.purple;
+                }
+                color.a = 0.5f;
+                EditorGUI.DrawRect(ToGuiCoord(rect.Value), color);
+            }
         }
     }
 }

@@ -17,14 +17,11 @@ public class KfsSpawner : MonoBehaviour
     [SerializeField] Transform _realKfs;
     [SerializeField] Transform _fakeKfs;
     [SerializeField] Transform _r1Kfs;
+    [SerializeField] LabelGenerator _labelGenerator;
 
-    List<Transform> _placedRealKfss = new();
-    List<Transform> _placedFakeKfss = new();
-    List<Transform> _placedR1Kfss = new();
-
-    public IReadOnlyList<Transform> PlacedRealKfss => _placedRealKfss;
-    public IReadOnlyList<Transform> PlacedFakeKfss => _placedFakeKfss;
-    public IReadOnlyList<Transform> PlacedR1Kfss => _placedR1Kfss;
+    List<Kfs> _placedRealKfss = new();
+    List<Kfs> _placedFakeKfss = new();
+    List<Kfs> _placedR1Kfss = new();
 
     void Start()
     {
@@ -74,16 +71,19 @@ public class KfsSpawner : MonoBehaviour
             cloned.Rotate(Vector3.up, Random.Range(0f, 360f), Space.World);
             cloned.gameObject.SetActive(true);
 
+            var kfs = cloned.GetComponent<Kfs>();
+            _labelGenerator.Kfss.Add(kfs);
+
             switch (index)
             {
                 case 0:
-                    _placedR1Kfss.Add(cloned);
+                    _placedR1Kfss.Add(kfs);
                     break;
                 case 1:
-                    _placedRealKfss.Add(cloned);
+                    _placedRealKfss.Add(kfs);
                     break;
                 case 2:
-                    _placedFakeKfss.Add(cloned);
+                    _placedFakeKfss.Add(kfs);
                     break;
                 default:
                     throw new Exception("Should not reach");
