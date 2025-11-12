@@ -103,3 +103,6 @@ InitTestScene*.unity*
 # Remove recovery
 /[Aa]ssets/_[Rr]ecovery/**
 /[Aa]ssets/_[Rr]ecovery*
+
+# Remove backup files
+*.FCBak
