@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -1.0061843, y: 0.225, z: -3.3981616}
-  m_LocalScale: {x: 17.5, y: 17.50001, z: 17.50001}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -138,7 +138,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.02, y: 0.020000005, z: 0.020000005}
+  m_Size: {x: 0.0035, y: 0.0035, z: 0.0035}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1552130281432381609
 MonoBehaviour:
@@ -155,3 +155,9 @@ MonoBehaviour:
   KfsType: 2
   KfsTeam: 1
   KfsIndex: 0
+  _labelGenerator: {fileID: 0}
+  _xMin: 0
+  _xMax: 360
+  _yMin: -90
+  _yMax: 90
+  _datasetCount: 100

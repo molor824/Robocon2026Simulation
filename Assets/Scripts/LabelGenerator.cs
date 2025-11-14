@@ -1,14 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Camera))]
 public class LabelGenerator : MonoBehaviour
 {
     public List<Kfs> Kfss = new();
+    public Camera Camera => _camera;
 
-    Rect? CreateLabel(Transform kfs)
+    Camera _camera;
+    InputAction _clickAction, _pointAction;
+    bool _clicked, _generating;
+
+    public Rect? CreateLabel(Transform kfs)
     {
         var offset = transform.position - kfs.position;
         var hit = Physics.Raycast(kfs.position, offset.normalized, offset.magnitude, 1);
@@ -26,7 +34,7 @@ public class LabelGenerator : MonoBehaviour
                 (i & 2) == 0 ? kfsMin.y : kfsMax.y,
                 (i & 4) == 0 ? kfsMin.z : kfsMax.z
             ));
-            return Camera.main.WorldToScreenPoint(corner);
+            return _camera.WorldToViewportPoint(corner);
         });
         if (corners.Any(corner => corner.z <= 0))
             return null;
@@ -38,22 +46,39 @@ public class LabelGenerator : MonoBehaviour
 
         if (!float.IsFinite(xmin) || !float.IsFinite(ymin) || !float.IsFinite(xmax) || !float.IsFinite(ymax))
             return null;
-        if (xmax < 0 || ymax < 0
-            || xmin >= Screen.width || ymin >= Screen.height)
+
+        var xcenter = (xmin + xmax) / 2;
+        var ycenter = (ymin + ymax) / 2;
+
+        if (xcenter < 0 || ycenter < 0 || xcenter > 1 || ycenter > 1)
             return null;
 
         return Rect.MinMaxRect(xmin, ymin, xmax, ymax);
     }
-    static Rect ToGuiCoord(Rect rect)
+    static Rect ToGuiRect(Rect rect)
     {
         var position = rect.position;
         var size = rect.size;
-        return new(
-            position.x, Screen.height - size.y - position.y, size.x, size.y
-        );
+
+        position.y = 1 - position.y - size.y;
+
+        var screenSize = new Vector2(Screen.width, Screen.height);
+
+        return new(position * screenSize, size * screenSize);
+    }
+    void Start()
+    {
+        _camera = GetComponent<Camera>();
+        _clickAction = InputSystem.actions.FindAction("Click");
+        _pointAction = InputSystem.actions.FindAction("Point");
+
+        _clickAction.performed += _ => _clicked = true;
     }
     void OnGUI()
     {
+        if (_camera != Camera.main) return;
+
+        var movement = GetComponentInParent<Movement>();
         foreach (var kfs in Kfss)
         {
             var rect = CreateLabel(kfs.transform);
@@ -76,9 +101,38 @@ public class LabelGenerator : MonoBehaviour
                 {
                     color = Color.purple;
                 }
-                color.a = 0.5f;
-                EditorGUI.DrawRect(ToGuiCoord(rect.Value), color);
+
+                var guiRect = ToGuiRect(rect.Value);
+                var guiMin = guiRect.min;
+                var guiMax = guiRect.max;
+                var mousePos = _pointAction.ReadValue<Vector2>();
+
+                var mouseHover = guiMin.x < mousePos.x && guiMin.y < mousePos.y && guiMax.x > mousePos.x && guiMax.y > mousePos.y;
+                color.a = mouseHover ? 0.7f : 0.5f;
+
+                if (_clicked && mouseHover)
+                {
+                    if (!_generating && movement != null)
+                    {
+                        _generating = true;
+                        movement.Disable();
+                        var oldPosition = transform.position;
+                        var oldRotation = transform.rotation;
+                        StartCoroutine(kfs.CreateDataset(this, () =>
+                        {
+                            _generating = false;
+                            movement.Enable();
+                            transform.position = oldPosition;
+                            transform.rotation = oldRotation;
+                        }));
+                    }
+                    _clicked = false;
+                }
+
+                EditorGUI.DrawRect(ToGuiRect(rect.Value), color);
             }
         }
+
+        _clicked = false;
     }
 }

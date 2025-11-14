@@ -20,4 +20,14 @@ public static class RandomExt
             (list[i], list[swapIndex]) = (list[swapIndex], list[i]);
         }
     }
+
+    public static Vector2 RangeVec2(Vector2 min, Vector2 max) => new(
+        Random.Range(min.x, max.x),
+        Random.Range(min.y, max.y)
+    );
+    public static Vector3 RangeVec3(Vector3 min, Vector3 max) => new(
+        Random.Range(min.x, max.x),
+        Random.Range(min.y, max.y),
+        Random.Range(min.z, max.z)
+    );
 }

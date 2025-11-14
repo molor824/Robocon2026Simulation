@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,16 +37,29 @@ public class Movement : MonoBehaviour
             Cursor.lockState = !_paused ? CursorLockMode.Locked : CursorLockMode.None;
         }
     }
-    
+
+    public void Enable()
+    {
+        enabled = true;
+        _lookAction.Enable();
+        _pauseAction.Enable();
+    }
+    public void Disable()
+    {
+        enabled = false;
+        _lookAction.Disable();
+        _pauseAction.Disable();
+    }
+
     void Start()
     {
         _camera = GetComponentInChildren<Camera>().transform;
-        
+
         _moveAction = InputSystem.actions.FindAction("Move");
         _lookAction = InputSystem.actions.FindAction("Look");
         _pauseAction = InputSystem.actions.FindAction("Pause");
         _controller = GetComponent<CharacterController>();
-        
+
         _lookAction.performed += ctx =>
         {
             if (Paused) return;
@@ -61,10 +75,10 @@ public class Movement : MonoBehaviour
         var moveValue = _moveAction.ReadValue<Vector2>();
         var direction = transform.localRotation * new Vector3(moveValue.x, 0, moveValue.y);
         var velocity = _controller.velocity;
-        
+
         velocity.x = direction.x * _speed;
         velocity.z = direction.z * _speed;
-        
+
         velocity.y -= _gravity * Time.deltaTime;
         _controller.Move(velocity * Time.deltaTime);
     }
