@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,9 +9,12 @@ using UnityEngine.InputSystem;
 public class LabelGenerator : MonoBehaviour
 {
     public List<Kfs> Kfss = new();
-    public Camera Camera => _camera;
+
+    [SerializeField] int _width = 640, _height = 360;
 
     Camera _camera;
+    Movement _movement;
+    RenderTexture _renderTexture;
     InputAction _clickAction, _pointAction;
     bool _clicked, _generating;
 
@@ -66,19 +68,28 @@ public class LabelGenerator : MonoBehaviour
 
         return new(position * screenSize, size * screenSize);
     }
+    public void Render()
+    {
+        _camera.Render();
+    }
+
     void Start()
     {
         _camera = GetComponent<Camera>();
+        _movement = GetComponentInParent<Movement>();
         _clickAction = InputSystem.actions.FindAction("Click");
         _pointAction = InputSystem.actions.FindAction("Point");
 
         _clickAction.performed += _ => _clicked = true;
+
+        _renderTexture = new(_width, _height, 32);
+        _camera.targetTexture = _renderTexture;
     }
     void OnGUI()
     {
         if (_camera != Camera.main) return;
+        if (_generating) return;
 
-        var movement = GetComponentInParent<Movement>();
         foreach (var kfs in Kfss)
         {
             var rect = CreateLabel(kfs.transform);
@@ -112,20 +123,17 @@ public class LabelGenerator : MonoBehaviour
 
                 if (_clicked && mouseHover)
                 {
-                    if (!_generating && movement != null)
+                    _generating = true;
+                    _movement?.Disable();
+                    var oldPosition = transform.position;
+                    var oldRotation = transform.rotation;
+                    StartCoroutine(kfs.CreateDataset(this, () =>
                     {
-                        _generating = true;
-                        movement.Disable();
-                        var oldPosition = transform.position;
-                        var oldRotation = transform.rotation;
-                        StartCoroutine(kfs.CreateDataset(this, () =>
-                        {
-                            _generating = false;
-                            movement.Enable();
-                            transform.position = oldPosition;
-                            transform.rotation = oldRotation;
-                        }));
-                    }
+                        _generating = false;
+                        _movement?.Enable();
+                        transform.position = oldPosition;
+                        transform.rotation = oldRotation;
+                    }));
                     _clicked = false;
                 }
 
