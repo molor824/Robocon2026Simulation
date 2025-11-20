@@ -533,6 +533,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LabelGenerator
   Kfss: []
+  _width: 640
+  _height: 360
 --- !u!114 &274223126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -982,6 +984,7 @@ GameObject:
   - component: {fileID: 1823688465}
   - component: {fileID: 1823688468}
   - component: {fileID: 1823688469}
+  - component: {fileID: 1823688470}
   m_Layer: 3
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1216,6 +1219,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LabelGenerator
   Kfss:
   - {fileID: 183052642}
+  _width: 640
+  _height: 360
+--- !u!114 &1823688470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1823688464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c14f8fa7e61cef888dda7f9431b0c6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LabelUI
 --- !u!1 &2013410473
 GameObject:
   m_ObjectHideFlags: 1
@@ -1330,7 +1347,7 @@ SceneRoots:
   - {fileID: 432432461}
   - {fileID: 2013410475}
   - {fileID: 667677049594488195}
-  - {fileID: 274223128}
   - {fileID: 425827931}
   - {fileID: 335054762}
   - {fileID: 183052641}
+  - {fileID: 274223128}

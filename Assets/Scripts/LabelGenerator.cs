@@ -13,10 +13,6 @@ public class LabelGenerator : MonoBehaviour
     [SerializeField] int _width = 640, _height = 360;
 
     Camera _camera;
-    Movement _movement;
-    RenderTexture _renderTexture;
-    InputAction _clickAction, _pointAction;
-    bool _clicked, _generating;
 
     public Rect? CreateLabel(Transform kfs)
     {
@@ -57,90 +53,9 @@ public class LabelGenerator : MonoBehaviour
 
         return Rect.MinMaxRect(xmin, ymin, xmax, ymax);
     }
-    static Rect ToGuiRect(Rect rect)
-    {
-        var position = rect.position;
-        var size = rect.size;
-
-        position.y = 1 - position.y - size.y;
-
-        var screenSize = new Vector2(Screen.width, Screen.height);
-
-        return new(position * screenSize, size * screenSize);
-    }
-    public void Render()
-    {
-        _camera.Render();
-    }
 
     void Start()
     {
         _camera = GetComponent<Camera>();
-        _movement = GetComponentInParent<Movement>();
-        _clickAction = InputSystem.actions.FindAction("Click");
-        _pointAction = InputSystem.actions.FindAction("Point");
-
-        _clickAction.performed += _ => _clicked = true;
-
-        _renderTexture = new(_width, _height, 32);
-        _camera.targetTexture = _renderTexture;
-    }
-    void OnGUI()
-    {
-        if (_camera != Camera.main) return;
-        if (_generating) return;
-
-        foreach (var kfs in Kfss)
-        {
-            var rect = CreateLabel(kfs.transform);
-            if (rect.HasValue)
-            {
-                Color color;
-                if (kfs.KfsTeam == Kfs.Team.Red)
-                {
-                    color = Color.red;
-                }
-                else
-                {
-                    color = Color.blue;
-                }
-                if (kfs.KfsType == Kfs.Type.Fake)
-                {
-                    color = Color.black;
-                }
-                else if (kfs.KfsType == Kfs.Type.R1)
-                {
-                    color = Color.purple;
-                }
-
-                var guiRect = ToGuiRect(rect.Value);
-                var guiMin = guiRect.min;
-                var guiMax = guiRect.max;
-                var mousePos = _pointAction.ReadValue<Vector2>();
-
-                var mouseHover = guiMin.x < mousePos.x && guiMin.y < mousePos.y && guiMax.x > mousePos.x && guiMax.y > mousePos.y;
-                color.a = mouseHover ? 0.7f : 0.5f;
-
-                if (_clicked && mouseHover)
-                {
-                    _generating = true;
-                    _movement?.Disable();
-                    var oldPosition = transform.position;
-                    var oldRotation = transform.rotation;
-                    StartCoroutine(kfs.CreateDataset(this, () =>
-                    {
-                        _generating = false;
-                        _movement?.Enable();
-                        transform.position = oldPosition;
-                        transform.rotation = oldRotation;
-                    }));
-                    _clicked = false;
-                }
-
-                EditorGUI.DrawRect(ToGuiRect(rect.Value), color);
-            }
-        }
-
-        _clicked = false;
     }
 }
