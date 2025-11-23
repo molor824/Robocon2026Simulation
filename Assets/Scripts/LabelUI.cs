@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,6 +10,9 @@ public class LabelUI : MonoBehaviour
     Movement _movement;
     InputAction _clickAction, _pointAction;
     LabelGenerator _labelGenerator;
+
+    [SerializeField] DatasetGenerator _datasetGenerator;
+    [SerializeField] List<Kfs> _kfss = new();
 
     void Start()
     {
@@ -34,9 +38,7 @@ public class LabelUI : MonoBehaviour
     }
     void OnGUI()
     {
-        if (_generating) return;
-
-        foreach (var kfs in _labelGenerator.Kfss)
+        foreach (var kfs in _kfss)
         {
             var rect = _labelGenerator.CreateLabel(kfs.transform);
             if (rect.HasValue)
@@ -67,18 +69,12 @@ public class LabelUI : MonoBehaviour
                 var mouseHover = guiMin.x < mousePos.x && guiMin.y < mousePos.y && guiMax.x > mousePos.x && guiMax.y > mousePos.y;
                 color.a = mouseHover ? 0.7f : 0.5f;
 
-                if (_clicked && mouseHover)
+                if (_clicked && mouseHover && !_generating)
                 {
                     _generating = true;
-                    _movement?.Disable();
-                    var oldPosition = transform.position;
-                    var oldRotation = transform.rotation;
-                    StartCoroutine(kfs.CreateDataset(_labelGenerator, () =>
+                    StartCoroutine(kfs.CreateDataset(_datasetGenerator, () =>
                     {
                         _generating = false;
-                        _movement?.Enable();
-                        transform.position = oldPosition;
-                        transform.rotation = oldRotation;
                     }));
                     _clicked = false;
                 }

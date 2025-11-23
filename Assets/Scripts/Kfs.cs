@@ -28,7 +28,27 @@ public class Kfs : MonoBehaviour
     [SerializeField] int _datasetCount = 100;
     [SerializeField] float _duration = 0.1f;
 
-    public IEnumerator CreateDataset(LabelGenerator generator, Action onFinish = null)
+    // Used for classifying kfss
+    // Indices:
+    // 0-14 Red Real
+    // 15-29 Red Fake
+    // 30 Red R1
+    // 31-45 Blue Real
+    // 46-60 Blue Fake
+    // 61 Blue R1
+    public int GetIndex()
+    {
+        var index = KfsIndex;
+        if (KfsTeam == Team.Blue)
+            index += 31;
+        if (KfsType == Type.Fake)
+            index += 15;
+        else if (KfsType == Type.R1)
+            index++;
+        return index;
+    }
+
+    public IEnumerator CreateDataset(DatasetGenerator generator, Action onFinish)
     {
         for (int i = 0; i < _datasetCount;)
         {
@@ -40,11 +60,11 @@ public class Kfs : MonoBehaviour
             var cameraOffset = qrot * (Vector3.forward + (Vector3)offset) * dist;
             generator.transform.SetPositionAndRotation(transform.position - cameraOffset, qrot);
 
-            var label = generator.CreateLabel(transform);
-            if (!label.HasValue) continue;
-
-            i++;
             yield return new WaitForSeconds(_duration);
+
+            var task = generator.GenerateDataset($"{i}", this);
+            yield return new WaitUntil(() => task.IsCompleted);
+            if (task.Result) i++;
         }
 
         onFinish?.Invoke();

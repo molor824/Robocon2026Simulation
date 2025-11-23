@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -8,10 +9,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Camera))]
 public class LabelGenerator : MonoBehaviour
 {
-    public List<Kfs> Kfss = new();
-
-    [SerializeField] int _width = 640, _height = 360;
-
     Camera _camera;
 
     public Rect? CreateLabel(Transform kfs)

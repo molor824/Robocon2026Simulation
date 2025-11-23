@@ -17,7 +17,6 @@ public class KfsSpawner : MonoBehaviour
     [SerializeField] Transform _realKfs;
     [SerializeField] Transform _fakeKfs;
     [SerializeField] Transform _r1Kfs;
-    [SerializeField] LabelGenerator _labelGenerator;
 
     List<Kfs> _placedRealKfss = new();
     List<Kfs> _placedFakeKfss = new();
@@ -72,7 +71,6 @@ public class KfsSpawner : MonoBehaviour
             cloned.gameObject.SetActive(true);
 
             var kfs = cloned.GetComponent<Kfs>();
-            _labelGenerator.Kfss.Add(kfs);
 
             switch (index)
             {
