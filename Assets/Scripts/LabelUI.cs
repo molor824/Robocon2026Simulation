@@ -1,18 +1,29 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(LabelGenerator))]
 public class LabelUI : MonoBehaviour
 {
     bool _clicked, _generating;
-    Movement _movement;
     InputAction _clickAction, _pointAction;
     LabelGenerator _labelGenerator;
 
     [SerializeField] DatasetGenerator _datasetGenerator;
     [SerializeField] List<Kfs> _kfss = new();
+
+    [SerializeField] Vector3 _rotMin = new(-20, 0, -30), _rotMax = new(20, 360, 30);
+    [SerializeField] Vector2 _offsetMin = new(-0.2f, -0.2f), _offsetMax = new(0.2f, 0.2f);
+    [SerializeField] float _distMin = 2, _distMax = 10;
+    [SerializeField] int _datasetCount = 100;
+
+    [SerializeField] bool _groupDataset = false;
 
     void Start()
     {
@@ -21,8 +32,26 @@ public class LabelUI : MonoBehaviour
 
         _clickAction.performed += _ => _clicked = true;
 
-        _movement = GetComponentInParent<Movement>();
         _labelGenerator = GetComponent<LabelGenerator>();
+    }
+
+    public IEnumerator GenerateDatasets(Kfs kfs, DatasetGenerator generator)
+    {
+        for (int i = 0; i < _datasetCount;)
+        {
+            var rot = RandomExt.RangeVec3(_rotMin, _rotMax);
+            var offset = RandomExt.RangeVec2(_offsetMin, _offsetMax);
+            var dist = Random.Range(_distMin, _distMax);
+
+            var qrot = Quaternion.Euler(rot);
+            var cameraOffset = qrot * (Vector3.forward + (Vector3)offset) * dist;
+            generator.transform.SetPositionAndRotation(kfs.transform.position - cameraOffset, qrot);
+
+            var task = generator.GenerateDataset($"{i}", _groupDataset ? _kfss : Enumerable.Repeat(kfs, 1));
+            yield return new WaitUntil(() => task.IsCompleted);
+            if (task.Result) i++;
+        }
+        _generating = false;
     }
     
     static Rect ToGuiRect(Rect rect)
@@ -40,7 +69,7 @@ public class LabelUI : MonoBehaviour
     {
         foreach (var kfs in _kfss)
         {
-            var rect = _labelGenerator.CreateLabel(kfs.transform);
+            var rect = _labelGenerator.GenerateLabel(kfs.transform);
             if (rect.HasValue)
             {
                 Color color;
@@ -72,10 +101,7 @@ public class LabelUI : MonoBehaviour
                 if (_clicked && mouseHover && !_generating)
                 {
                     _generating = true;
-                    StartCoroutine(kfs.CreateDataset(_datasetGenerator, () =>
-                    {
-                        _generating = false;
-                    }));
+                    StartCoroutine(GenerateDatasets(kfs, _datasetGenerator));
                     _clicked = false;
                 }
 

@@ -2,6 +2,11 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.Rendering;
+using System.Text;
 
 [RequireComponent(typeof(LabelGenerator), typeof(Camera))]
 public class DatasetGenerator : MonoBehaviour
@@ -12,14 +17,28 @@ public class DatasetGenerator : MonoBehaviour
     LabelGenerator _labelGenerator;
     Camera _camera;
 
-    public async Task<bool> GenerateDataset(string fileName, Kfs kfs)
+    static Rect InvertY(Rect rect)
     {
-        var label = _labelGenerator.CreateLabel(kfs.transform);
-        if (!label.HasValue) return false;
+        return new Rect(rect.x, 1 - rect.y - rect.height, rect.width, rect.height);
+    }
 
-        var labelIndex = kfs.GetIndex();
-        var center = label.Value.center;
-        var size = label.Value.size;
+    public async Task<bool> GenerateDataset(string fileName, IEnumerable<Kfs> kfss)
+    {
+        var labelContent = new StringBuilder();
+        foreach (var kfs in kfss)
+        {
+            var label = _labelGenerator.GenerateLabel(kfs.transform);
+            if (!label.HasValue) continue;
+
+            var rect = InvertY(label.Value);
+            var center = rect.center;
+            var size = rect.size;
+            var labelIndex = kfs.GetIndex();
+            labelContent.AppendLine($"{labelIndex} {center.x} {center.y} {size.x} {size.y}");
+        }
+
+        if (labelContent.Length == 0)
+            return false;
 
         _camera.Render();
         var rt = _camera.activeTexture;
@@ -30,7 +49,7 @@ public class DatasetGenerator : MonoBehaviour
 
         var bytes = tex.EncodeToPNG();
         await Task.WhenAll(
-            File.WriteAllTextAsync($"{_labelDirectory}/{fileName}.txt", $"{labelIndex} {center.x} {center.y} {size.x} {size.y}\n"),
+            File.WriteAllTextAsync($"{_labelDirectory}/{fileName}.txt", labelContent.ToString()),
             File.WriteAllBytesAsync($"{_imageDirectory}/{fileName}.png", bytes)
         );
         return true;

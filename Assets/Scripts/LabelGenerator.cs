@@ -11,7 +11,7 @@ public class LabelGenerator : MonoBehaviour
 {
     Camera _camera;
 
-    public Rect? CreateLabel(Transform kfs)
+    public Rect? GenerateLabel(Transform kfs)
     {
         var offset = transform.position - kfs.position;
         var hit = Physics.Raycast(kfs.position, offset.normalized, offset.magnitude, 1);

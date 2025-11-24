@@ -388,6 +388,22 @@ PrefabInstance:
       value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 3371905304290327577, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: _offsetMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3371905304290327577, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: _offsetMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3371905304290327577, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: _offsetMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3371905304290327577, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: _offsetMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3371905304290327577, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: _datasetCount
       value: 100
       objectReference: {fileID: 0}
@@ -436,40 +452,56 @@ PrefabInstance:
       value: RedRealKfs
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.955
+      value: 2.01
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.639
+      value: 0.827
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.045
+      value: -1.009
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.6790211
+      value: 0.6159004
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.679021
+      value: -0.6159004
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.19730799
+      value: -0.34737113
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.1973079
+      value: -0.34737113
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8753071902365451903, guid: 44224e362de0be69bbee48c2c017a4a9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -32.405
+      value: -58.846
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -750,8 +782,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 344f586b4ba9e724ea29fcbcccbd8b0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DatasetGenerator
-  _imageDirectory: Assets/.datasets/Images
-  _labelDirectory: Assets/.datasets/Labels
+  _imageDirectory: Assets/.datasets/Images/0
+  _labelDirectory: Assets/.datasets/Labels/0
 --- !u!1 &335054758
 GameObject:
   m_ObjectHideFlags: 0
@@ -1418,6 +1450,14 @@ MonoBehaviour:
   _datasetGenerator: {fileID: 274223129}
   _kfss:
   - {fileID: 183052642}
+  _rotMin: {x: -20, y: 0, z: -30}
+  _rotMax: {x: 20, y: 360, z: 30}
+  _offsetMin: {x: -0.2, y: -0.2}
+  _offsetMax: {x: 0.2, y: 0.2}
+  _distMin: 1
+  _distMax: 5
+  _datasetCount: 100
+  _groupDataset: 0
 --- !u!1 &1832739095
 GameObject:
   m_ObjectHideFlags: 0
