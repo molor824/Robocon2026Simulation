@@ -1,18 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(LabelGenerator))]
 public class LabelUI : MonoBehaviour
 {
-    bool _clicked, _generating;
-    InputAction _clickAction, _pointAction;
+    bool _generating;
+    InputAction _generateAction;
     LabelGenerator _labelGenerator;
 
     [SerializeField] DatasetGenerator _datasetGenerator;
@@ -23,19 +21,21 @@ public class LabelUI : MonoBehaviour
     [SerializeField] float _distMin = 2, _distMax = 10;
     [SerializeField] int _datasetCount = 100;
 
-    [SerializeField] bool _groupDataset = false;
-
     void Start()
     {
-        _clickAction = InputSystem.actions.FindAction("Click");
-        _pointAction = InputSystem.actions.FindAction("Point");
-
-        _clickAction.performed += _ => _clicked = true;
-
         _labelGenerator = GetComponent<LabelGenerator>();
+        _generateAction = InputSystem.actions.FindAction("DatasetGen");
+        _generateAction.performed += _ => 
+        {
+            if (!_generating)
+            {
+                _generating = true;
+                StartCoroutine(GenerateDatasets(_datasetGenerator));
+            }
+        };
     }
 
-    public IEnumerator GenerateDatasets(Kfs kfs, DatasetGenerator generator)
+    public IEnumerator GenerateDatasets(DatasetGenerator generator)
     {
         for (int i = 0; i < _datasetCount;)
         {
@@ -45,9 +45,9 @@ public class LabelUI : MonoBehaviour
 
             var qrot = Quaternion.Euler(rot);
             var cameraOffset = qrot * (Vector3.forward + (Vector3)offset) * dist;
-            generator.transform.SetPositionAndRotation(kfs.transform.position - cameraOffset, qrot);
+            generator.transform.SetPositionAndRotation(transform.position - cameraOffset, qrot);
 
-            var task = generator.GenerateDataset($"{i}", _groupDataset ? _kfss : Enumerable.Repeat(kfs, 1));
+            var task = generator.GenerateDataset(i, _kfss);
             yield return new WaitUntil(() => task.IsCompleted);
             if (task.Result) i++;
         }
@@ -89,26 +89,10 @@ public class LabelUI : MonoBehaviour
                 {
                     color = Color.purple;
                 }
-
-                var guiRect = ToGuiRect(rect.Value);
-                var guiMin = guiRect.min;
-                var guiMax = guiRect.max;
-                var mousePos = _pointAction.ReadValue<Vector2>();
-
-                var mouseHover = guiMin.x < mousePos.x && guiMin.y < mousePos.y && guiMax.x > mousePos.x && guiMax.y > mousePos.y;
-                color.a = mouseHover ? 0.7f : 0.5f;
-
-                if (_clicked && mouseHover && !_generating)
-                {
-                    _generating = true;
-                    StartCoroutine(GenerateDatasets(kfs, _datasetGenerator));
-                    _clicked = false;
-                }
+                color.a = 0.3f;
 
                 EditorGUI.DrawRect(ToGuiRect(rect.Value), color);
             }
         }
-
-        _clicked = false;
     }
 }

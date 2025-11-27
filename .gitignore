@@ -108,4 +108,4 @@ InitTestScene*.unity*
 *.FCBak
 
 # It would be wasteful to store datasets in the repository, so we're storing it seperately
-/[Aa]ssets/.datasets
+.datasets
