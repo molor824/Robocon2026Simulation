@@ -30,12 +30,12 @@ public class Kfs : MonoBehaviour
     public int GetIndex()
     {
         var index = KfsIndex;
-        if (KfsTeam == Team.Blue)
-            index += 31;
         if (KfsType == Type.Fake)
             index += 15;
         else if (KfsType == Type.R1)
-            index++;
+            index = 30;
+        if (KfsTeam == Team.Blue)
+            index += 31;
         return index;
     }
 
