@@ -39,4 +39,5 @@ public class Kfs : MonoBehaviour
         return index;
     }
 
+    public const int MaxIndex = 30 + 31;
 }
