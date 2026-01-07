@@ -4741,7 +4741,7 @@ MonoBehaviour:
   _datasetGenerator: {fileID: 274223129}
   _activeKfss: {fileID: 1350622513}
   _rotMin: {x: -20, y: 0, z: -30}
-  _rotMax: {x: 20, y: 360, z: 30}
+  _rotMax: {x: 30, y: 360, z: 30}
   _offsetMin: {x: -0.2, y: -0.2}
   _offsetMax: {x: 0.2, y: 0.2}
   _distMin: 1
