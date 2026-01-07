@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Camera))]
 public class LabelGenerator : MonoBehaviour
@@ -34,10 +31,10 @@ public class LabelGenerator : MonoBehaviour
         if (corners.Any(corner => corner.z <= 0))
             return null;
 
-        var xmin = corners.Select(corner => corner.x).Min();
-        var ymin = corners.Select(corner => corner.y).Min();
-        var xmax = corners.Select(corner => corner.x).Max();
-        var ymax = corners.Select(corner => corner.y).Max();
+        var xmin = corners.Min(corner => corner.x);
+        var ymin = corners.Min(corner => corner.y);
+        var xmax = corners.Max(corner => corner.x);
+        var ymax = corners.Max(corner => corner.y);
 
         if (!float.IsFinite(xmin) || !float.IsFinite(ymin) || !float.IsFinite(xmax) || !float.IsFinite(ymax))
             return null;

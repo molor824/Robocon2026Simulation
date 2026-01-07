@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Kfs : MonoBehaviour
@@ -17,7 +18,6 @@ public class Kfs : MonoBehaviour
     public Type KfsType;
     public Team KfsTeam;
     public int KfsIndex;
-
 
     // Used for classifying kfss
     // Indices:

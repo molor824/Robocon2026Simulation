@@ -48,8 +48,8 @@ public class DatasetGenerator : MonoBehaviour
         var bytes = tex.EncodeToPNG();
         Destroy(tex);
         await Task.WhenAll(
-            File.WriteAllTextAsync($"{_labelDirectory}/{filename}_{index}.txt", labelContent.ToString()),
-            File.WriteAllBytesAsync($"{_imageDirectory}/{filename}_{index}.png", bytes)
+            File.WriteAllTextAsync($"{_labelDirectory}/{index}_{filename}.txt", labelContent.ToString()),
+            File.WriteAllBytesAsync($"{_imageDirectory}/{index}_{filename}.png", bytes)
         );
 
         return true;
