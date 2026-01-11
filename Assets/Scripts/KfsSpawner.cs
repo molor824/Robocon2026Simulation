@@ -1,91 +1,53 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class KfsSpawner : MonoBehaviour
 {
-    const int TotalSpot = 12;
+    [SerializeField] Transform _kfsContainer;
+    [SerializeField] Vector2 _positionVariation = new(0.2f, 0.2f);
 
-    const int MaxRealKfsCount = 4,
-        MaxFakeKfsCount = 1,
-        MaxR1KfsCount = 3;
+    Transform[] _spawners;
+    Kfs[] _kfss;
+    List<Kfs> _activeKfss = new();
 
-    const float PositionVariation = 0.1f;
-
-    [SerializeField] Transform _realKfs;
-    [SerializeField] Transform _fakeKfs;
-    [SerializeField] Transform _r1Kfs;
-
-    List<Kfs> _placedRealKfss = new();
-    List<Kfs> _placedFakeKfss = new();
-    List<Kfs> _placedR1Kfss = new();
+    public IReadOnlyList<Kfs> ActiveKfss => _activeKfss;
 
     void Start()
     {
-        var realIndices = Enumerable.Range(0, _realKfs.childCount).ToArray();
-        var fakeIndices = Enumerable.Range(0, _fakeKfs.childCount).ToArray();
-        RandomExt.Shuffle(realIndices);
-        RandomExt.Shuffle(fakeIndices);
-
-        var placeOrder = Enumerable.Range(0, TotalSpot).ToArray();
-        RandomExt.Shuffle(placeOrder, 3, TotalSpot); // First 3 row must always be placed
-
-        for (var order = 0; order < TotalSpot; order++)
+        _spawners = new Transform[transform.childCount];
+        for (var i = 0; i < transform.childCount; i++)
         {
-            int r1Count = _placedR1Kfss.Count;
-            int realCount = _placedRealKfss.Count;
-            int fakeCount = _placedFakeKfss.Count;
+            _spawners[i] = transform.GetChild(i);
+        }
+        _kfss = new Kfs[_kfsContainer.childCount];
+        for (var i = 0; i < _kfsContainer.childCount; i++)
+        {
+            _kfss[i] = _kfsContainer.GetChild(i).GetComponent<Kfs>();
+            _kfss[i].gameObject.SetActive(false);
+        }
+    }
 
-            if (r1Count >= MaxR1KfsCount
-                && realCount >= MaxRealKfsCount
-                && _placedFakeKfss.Count >= MaxFakeKfsCount)
-                break;
+    public void SpawnKfss()
+    {
+        var kfsOrder = new int[_kfss.Length];
+        for (int i = 0; i < _kfss.Length; i++)
+            kfsOrder[i] = i;
+        RandomExt.Shuffle(kfsOrder);
 
-            int i = placeOrder[order];
-            int x = i % 3;
-            int y = i / 3;
+        foreach (var kfs in _kfss)
+        {
+            kfs.gameObject.SetActive(false);
+        }
+        _activeKfss.Clear();
+        for (int i = 0; i < _spawners.Length; i++)
+        {
+            var kfs = _kfss[kfsOrder[i]];
+            var offset = RandomExt.RangeVec2(-_positionVariation, _positionVariation);
 
-            bool r1 = (x == 0 || x == 2) && r1Count < MaxR1KfsCount;
-            bool real = realCount < MaxRealKfsCount;
-            bool fake = y != 0 && fakeCount < MaxFakeKfsCount;
-
-            if (!r1 && !real && !fake)
-                continue;
-
-            bool[] mask = { r1, real, fake };
-            int index = Random.Range(0, 3);
-            while (!mask[index])
-                index = (index + 1) % 3;
-
-            Transform[] kfss = { _r1Kfs, _realKfs.GetChild(realCount), _fakeKfs.GetChild(fakeCount) };
-            var spawner = transform.GetChild(i);
-            var cloned = Instantiate(kfss[index]);
-            cloned.localPosition = new Vector3(
-                Random.Range(-PositionVariation, PositionVariation),
-                Random.Range(-PositionVariation, PositionVariation),
-                Random.Range(-PositionVariation, PositionVariation)
-            ) + spawner.position;
-            cloned.Rotate(Vector3.up, Random.Range(0f, 360f), Space.World);
-            cloned.gameObject.SetActive(true);
-
-            var kfs = cloned.GetComponent<Kfs>();
-
-            switch (index)
-            {
-                case 0:
-                    _placedR1Kfss.Add(kfs);
-                    break;
-                case 1:
-                    _placedRealKfss.Add(kfs);
-                    break;
-                case 2:
-                    _placedFakeKfss.Add(kfs);
-                    break;
-                default:
-                    throw new Exception("Should not reach");
-            }
+            kfs.gameObject.SetActive(true);
+            kfs.transform.position = _spawners[i].position + new Vector3(offset.x, 0.0f, offset.y);
+            kfs.transform.rotation = Quaternion.AngleAxis(Random.Range(0.0f, 360.0f), Vector3.up) * _spawners[i].rotation;
+            _activeKfss.Add(kfs);
         }
     }
 }

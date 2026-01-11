@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,14 +10,14 @@ public class LabelUI : MonoBehaviour
     bool _generating;
     InputAction _generateAction;
     LabelGenerator _labelGenerator;
-    List<Kfs> _kfss = new();
 
+    [SerializeField] KfsSpawner _kfsSpawner;
     [SerializeField] DatasetGenerator _datasetGenerator;
-    [SerializeField] Transform _activeKfss;
     [SerializeField] Vector3 _rotMin = new(-20, 0, -30), _rotMax = new(20, 360, 30);
     [SerializeField] Vector2 _offsetMin = new(-0.2f, -0.2f), _offsetMax = new(0.2f, 0.2f);
     [SerializeField] float _distMin = 2, _distMax = 10;
     [SerializeField] int _datasetCount = 100;
+    [SerializeField] float _spawnDuration = 3.0f / 60.0f;
 
     void Start()
     {
@@ -33,37 +31,14 @@ public class LabelUI : MonoBehaviour
                 StartCoroutine(GenerateDatasets(_datasetGenerator));
             }
         };
-        
-        for (var i = 0; i < _activeKfss.childCount; i++)
-        {
-            var child = _activeKfss.GetChild(i);
-            if (child.TryGetComponent(out Kfs kfs))
-                _kfss.Add(kfs);
-        }
-    }
-
-    void ShuffleKfsPositions()
-    {
-        for (int i = 0; i < _kfss.Count; i++)
-        {
-            var j = Random.Range(0, _kfss.Count);
-            var kfs1 = _kfss[i].transform;
-            var kfs2 = _kfss[j].transform;
-            // Swap positions
-            var temp = kfs1.position;
-            kfs1.position = kfs2.position;
-            kfs2.position = temp;
-            // Random Y rotation
-            kfs1.Rotate(Vector3.up, Random.Range(0.0f, 360.0f), Space.World);
-            kfs2.Rotate(Vector3.up, Random.Range(0.0f, 360.0f), Space.World);
-        }
     }
 
     public IEnumerator GenerateDatasets(DatasetGenerator generator)
     {
         for (int i = 0; i < _datasetCount;)
         {
-            ShuffleKfsPositions();
+            _kfsSpawner.SpawnKfss();
+            yield return new WaitForSeconds(_spawnDuration);
 
             var rot = RandomExt.RangeVec3(_rotMin, _rotMax);
             var offset = RandomExt.RangeVec2(_offsetMin, _offsetMax);
@@ -73,7 +48,7 @@ public class LabelUI : MonoBehaviour
             var cameraOffset = qrot * (Vector3.forward + (Vector3)offset) * dist;
             generator.transform.SetPositionAndRotation(transform.position - cameraOffset, qrot);
 
-            var task = generator.GenerateDataset(i, _kfss);
+            var task = generator.GenerateDataset(i, _kfsSpawner.ActiveKfss);
             yield return new WaitUntil(() => task.IsCompleted);
             if (task.Result) i++;
         }
@@ -93,7 +68,7 @@ public class LabelUI : MonoBehaviour
     }
     void OnGUI()
     {
-        foreach (var kfs in _kfss)
+        foreach (var kfs in _kfsSpawner.ActiveKfss)
         {
             var rect = _labelGenerator.GenerateLabel(kfs.transform);
             if (rect.HasValue)
