@@ -78,8 +78,8 @@ public class Movement : MonoBehaviour
 
         velocity.x = direction.x * _speed;
         velocity.z = direction.z * _speed;
-
         velocity.y -= _gravity * Time.deltaTime;
+
         _controller.Move(velocity * Time.deltaTime);
     }
 }

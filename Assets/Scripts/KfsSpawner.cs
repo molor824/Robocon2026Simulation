@@ -25,6 +25,8 @@ public class KfsSpawner : MonoBehaviour
             _kfss[i] = _kfsContainer.GetChild(i).GetComponent<Kfs>();
             _kfss[i].gameObject.SetActive(false);
         }
+
+        SpawnKfss();
     }
 
     public void SpawnKfss()

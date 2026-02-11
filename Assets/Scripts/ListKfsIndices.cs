@@ -1,26 +1,28 @@
-using System;
 using System.Text;
 using UnityEngine;
 
 public class ListKfsIndices : MonoBehaviour
 {
+    Kfs[] _kfss;
+
+    public Kfs GetKfs(int index) => _kfss[index];
     void Start()
     {
-        var kfss = new Kfs[Kfs.MaxIndex + 1];
+        _kfss = new Kfs[Kfs.MaxIndex + 1];
 
         for (var i = 0; i < transform.childCount; i++)
         {
             var child = transform.GetChild(i);
             if (!child.TryGetComponent(out Kfs kfs)) continue;
             var index = kfs.GetIndex();
-            kfss[index] = kfs;
+            _kfss[index] = kfs;
         }
 
         var builder = new StringBuilder();
 
-        for (var i = 0; i < kfss.Length; i++)
+        for (var i = 0; i < _kfss.Length; i++)
         {
-            builder.AppendLine($"{i}: {kfss[i].name}");
+            builder.AppendLine($"{i}: {_kfss[i].name}");
         }
 
         Debug.Log(builder);
