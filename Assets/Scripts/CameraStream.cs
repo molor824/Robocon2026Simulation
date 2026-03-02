@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
@@ -42,13 +40,13 @@ public class CameraStream : MonoBehaviour
         }
         _camera.Render();
 
-        if (_texture == null || _texture.width != Screen.width || _texture.height != Screen.height)
+        if (_texture == null || _texture.width != _renderTexture.width || _texture.height != _renderTexture.height)
         {
             if (_texture != null) Destroy(_texture);
-            _texture = new(Screen.width, Screen.height, TextureFormat.RGB24, false);
+            _texture = new(_renderTexture.width, _renderTexture.height, TextureFormat.RGB24, false);
         }
         RenderTexture.active = _renderTexture;
-        _texture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0, false);
+        _texture.ReadPixels(new Rect(0, 0, _renderTexture.width, _renderTexture.height), 0, 0, false);
         var bytes = _texture.EncodeToPNG();
 
         _streamTask = StreamBytesAsync(bytes);

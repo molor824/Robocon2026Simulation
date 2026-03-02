@@ -18,6 +18,7 @@ public class LabelUI : MonoBehaviour
     [SerializeField] float _distMin = 2, _distMax = 10;
     [SerializeField] int _datasetCount = 100;
     [SerializeField] float _spawnDuration = 3.0f / 60.0f;
+    [SerializeField] Font _labelFont;
 
     void Start()
     {
@@ -55,17 +56,6 @@ public class LabelUI : MonoBehaviour
         _generating = false;
     }
     
-    static Rect ToGuiRect(Rect rect)
-    {
-        var position = rect.position;
-        var size = rect.size;
-
-        position.y = 1 - position.y - size.y;
-
-        var screenSize = new Vector2(Screen.width, Screen.height);
-
-        return new(position * screenSize, size * screenSize);
-    }
     void OnGUI()
     {
         foreach (var kfs in _kfsSpawner.ActiveKfss)
@@ -73,26 +63,15 @@ public class LabelUI : MonoBehaviour
             var rect = _labelGenerator.GenerateLabel(kfs.transform);
             if (rect.HasValue)
             {
-                Color color;
-                if (kfs.KfsTeam == Kfs.Team.Red)
-                {
-                    color = Color.red;
-                }
-                else
-                {
-                    color = Color.blue;
-                }
-                if (kfs.KfsType == Kfs.Type.Fake)
-                {
-                    color = Color.black;
-                }
-                else if (kfs.KfsType == Kfs.Type.R1)
-                {
-                    color = Color.purple;
-                }
-                color.a = 0.3f;
+                var uiRect = LabelGenerator.ToGuiRect(rect.Value);
 
-                EditorGUI.DrawRect(ToGuiRect(rect.Value), color);
+                GuiExt.DrawRectOutline(uiRect, 2, Color.black);
+                GUI.Label(new Rect(uiRect.x, uiRect.y + uiRect.height, 100, 20), kfs.name, new GUIStyle()
+                {
+                    fontSize = 15,
+                    alignment = TextAnchor.UpperRight,
+                    font = _labelFont
+                });
             }
         }
     }

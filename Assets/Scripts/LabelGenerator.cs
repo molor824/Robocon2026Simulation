@@ -46,6 +46,17 @@ public class LabelGenerator : MonoBehaviour
 
         return Rect.MinMaxRect(xmin, ymin, xmax, ymax);
     }
+    public static Rect ToGuiRect(Rect rect)
+    {
+        var position = rect.position;
+        var size = rect.size;
+
+        position.y = 1 - position.y - size.y;
+
+        var screenSize = new Vector2(Screen.width, Screen.height);
+
+        return new(position * screenSize, size * screenSize);
+    }
 
     void Start()
     {

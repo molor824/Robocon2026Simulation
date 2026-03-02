@@ -39,7 +39,7 @@ public class DatasetGenerator : MonoBehaviour
             return false;
 
         _camera.Render();
-        var rt = _camera.activeTexture;
+        var rt = _camera.targetTexture;
         RenderTexture.active = rt;
 
         Texture2D tex = new(rt.width, rt.height, TextureFormat.RGB24, false);

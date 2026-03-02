@@ -22,8 +22,8 @@ public class LabelDecoder : MonoBehaviour
 {
     CameraStream _cameraStream;
     List<Label> _labels = new();
-    [SerializeField]
-    ListKfsIndices _listKfsIndices;
+    [SerializeField] ListKfsIndices _kfsIndices;
+    [SerializeField] Font _labelFont;
 
     const int LabelSize = sizeof(byte) + sizeof(float) * 5;
 
@@ -58,25 +58,20 @@ public class LabelDecoder : MonoBehaviour
         var screenSize = new Vector2(Screen.width, Screen.height);
         return new Rect((rect.position - rect.size / 2) * screenSize, rect.size * screenSize);
     }
-    void DrawRectOutline(Rect rect, float thickness, Color color)
-    {
-        EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width, thickness), color);
-        EditorGUI.DrawRect(new Rect(rect.x, rect.y, thickness, rect.height), color);
-        EditorGUI.DrawRect(new Rect(rect.x, rect.y + rect.height - thickness, rect.width, thickness), color);
-        EditorGUI.DrawRect(new Rect(rect.x + rect.width - thickness, rect.y, thickness, rect.height), color);
-    }
+    
     void OnGUI()
     {
         foreach (var label in _labels)
         {
-            var kfs = _listKfsIndices.GetKfs(label.Index);
+            var kfs = _kfsIndices.GetKfs(label.Index);
             var box = ToGuiRect(label.Box);
 
-            DrawRectOutline(box, 2, Color.black);
-            GUI.Label(new Rect(box.x, box.y - 20, 100, 20), kfs.name, new GUIStyle()
+            GuiExt.DrawRectOutline(box, 2, Color.black);
+            EditorGUI.TextField(new Rect(box.x, box.y - 20, 100, 20), $"{kfs.name}: {label.Confidence * 100:0.}%", new GUIStyle()
             {
                 fontSize = 15,
-                alignment = TextAnchor.LowerLeft
+                alignment = TextAnchor.LowerLeft,
+                font = _labelFont
             });
         }
     }
