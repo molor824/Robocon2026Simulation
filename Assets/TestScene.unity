@@ -400,7 +400,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc0cd69a5d5222555921c90eeb70a180, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LabelDecoder
-  _listKfsIndices: {fileID: 705159393}
+  _kfsIndices: {fileID: 705159393}
+  _labelFont: {fileID: 0}
 --- !u!1 &34748989
 GameObject:
   m_ObjectHideFlags: 0
