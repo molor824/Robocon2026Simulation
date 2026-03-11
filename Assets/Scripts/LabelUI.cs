@@ -12,13 +12,13 @@ public class LabelUI : MonoBehaviour
     LabelGenerator _labelGenerator;
 
     [SerializeField] KfsSpawner _kfsSpawner;
+    [SerializeField] LightRandomizer _lightRandomizer;
     [SerializeField] DatasetGenerator _datasetGenerator;
     [SerializeField] Vector3 _rotMin = new(-20, 0, -30), _rotMax = new(20, 360, 30);
     [SerializeField] Vector2 _offsetMin = new(-0.2f, -0.2f), _offsetMax = new(0.2f, 0.2f);
     [SerializeField] float _distMin = 2, _distMax = 10;
     [SerializeField] int _datasetCount = 100;
     [SerializeField] float _spawnDuration = 3.0f / 60.0f;
-    [SerializeField] Font _labelFont;
 
     void Start()
     {
@@ -39,6 +39,7 @@ public class LabelUI : MonoBehaviour
         for (int i = 0; i < _datasetCount;)
         {
             _kfsSpawner.SpawnKfss();
+            _lightRandomizer.Randomize();
             yield return new WaitForSeconds(_spawnDuration);
 
             var rot = RandomExt.RangeVec3(_rotMin, _rotMax);
@@ -49,7 +50,7 @@ public class LabelUI : MonoBehaviour
             var cameraOffset = qrot * (Vector3.forward + (Vector3)offset) * dist;
             generator.transform.SetPositionAndRotation(transform.position - cameraOffset, qrot);
 
-            var task = generator.GenerateDataset(i, _kfsSpawner.ActiveKfss);
+            var task = generator.GenerateDataset(_kfsSpawner.ActiveKfss);
             yield return new WaitUntil(() => task.IsCompleted);
             if (task.Result) i++;
         }
@@ -65,12 +66,12 @@ public class LabelUI : MonoBehaviour
             {
                 var uiRect = LabelGenerator.ToGuiRect(rect.Value);
 
-                GuiExt.DrawRectOutline(uiRect, 2, Color.black);
+                GuiExt.DrawRectOutline(uiRect, 2, Color.green);
                 GUI.Label(new Rect(uiRect.x, uiRect.y + uiRect.height, 100, 20), kfs.name, new GUIStyle()
                 {
                     fontSize = 15,
                     alignment = TextAnchor.UpperRight,
-                    font = _labelFont
+                    normal = new GUIStyleState { textColor = Color.green }
                 });
             }
         }

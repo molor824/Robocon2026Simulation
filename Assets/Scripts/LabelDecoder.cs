@@ -23,7 +23,6 @@ public class LabelDecoder : MonoBehaviour
     CameraStream _cameraStream;
     List<Label> _labels = new();
     [SerializeField] ListKfsIndices _kfsIndices;
-    [SerializeField] Font _labelFont;
 
     const int LabelSize = sizeof(byte) + sizeof(float) * 5;
 
@@ -66,12 +65,12 @@ public class LabelDecoder : MonoBehaviour
             var kfs = _kfsIndices.GetKfs(label.Index);
             var box = ToGuiRect(label.Box);
 
-            GuiExt.DrawRectOutline(box, 2, Color.black);
+            GuiExt.DrawRectOutline(box, 2, Color.blue);
             EditorGUI.TextField(new Rect(box.x, box.y - 20, 100, 20), $"{kfs.name}: {label.Confidence * 100:0.}%", new GUIStyle()
             {
                 fontSize = 15,
                 alignment = TextAnchor.LowerLeft,
-                font = _labelFont
+                normal = new GUIStyleState { textColor = Color.blue }
             });
         }
     }

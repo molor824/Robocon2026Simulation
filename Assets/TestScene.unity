@@ -163,6 +163,8 @@ GameObject:
   - component: {fileID: 32030226}
   - component: {fileID: 32030229}
   - component: {fileID: 32030230}
+  - component: {fileID: 32030232}
+  - component: {fileID: 32030231}
   m_Layer: 3
   m_Name: StreamCamera
   m_TagString: Untagged
@@ -401,7 +403,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LabelDecoder
   _kfsIndices: {fileID: 705159393}
-  _labelFont: {fileID: 0}
+--- !u!114 &32030231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32030224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c14f8fa7e61cef888dda7f9431b0c6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LabelUI
+  _kfsSpawner: {fileID: 1311488779}
+  _datasetGenerator: {fileID: 0}
+  _rotMin: {x: -20, y: 0, z: -30}
+  _rotMax: {x: 20, y: 360, z: 30}
+  _offsetMin: {x: -0.2, y: -0.2}
+  _offsetMax: {x: 0.2, y: 0.2}
+  _distMin: 2
+  _distMax: 10
+  _datasetCount: 100
+  _spawnDuration: 0.05
+--- !u!114 &32030232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32030224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb29aea32f98c874a9ec011d8a36e414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LabelGenerator
 --- !u!1 &34748989
 GameObject:
   m_ObjectHideFlags: 0
@@ -524,13 +559,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157207112}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.45187673, y: 0.4924625, z: -0.21402675, w: 0.71237683}
+  m_LocalRotation: {x: 0.41153693, y: 0.3789923, z: -0.19352297, w: 0.8059473}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 58.717, y: 78.156, z: 15.656}
+  m_LocalEulerAnglesHint: {x: 54.1, y: 50.37, z: 0}
 --- !u!114 &157207115
 MonoBehaviour:
   m_ObjectHideFlags: 0

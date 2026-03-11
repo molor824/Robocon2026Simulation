@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text;
+using System;
 
 [RequireComponent(typeof(LabelGenerator), typeof(Camera))]
 public class DatasetGenerator : MonoBehaviour
@@ -18,7 +19,7 @@ public class DatasetGenerator : MonoBehaviour
         return new Rect(rect.x, 1 - rect.y - rect.height, rect.width, rect.height);
     }
 
-    public async Task<bool> GenerateDataset(int index, IEnumerable<Kfs> kfss)
+    public async Task<bool> GenerateDataset(IEnumerable<Kfs> kfss)
     {
         var labelContent = new StringBuilder();
         var filename = new StringBuilder();
@@ -46,10 +47,11 @@ public class DatasetGenerator : MonoBehaviour
         tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0, false);
 
         var bytes = tex.EncodeToPNG();
+        var guid = Guid.NewGuid();
         Destroy(tex);
         await Task.WhenAll(
-            File.WriteAllTextAsync($"{_labelDirectory}/{index}_{filename}.txt", labelContent.ToString()),
-            File.WriteAllBytesAsync($"{_imageDirectory}/{index}_{filename}.png", bytes)
+            File.WriteAllTextAsync($"{_labelDirectory}/{guid}_{filename}.txt", labelContent.ToString()),
+            File.WriteAllBytesAsync($"{_imageDirectory}/{guid}_{filename}.png", bytes)
         );
 
         return true;
