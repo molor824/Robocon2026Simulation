@@ -1,11 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class RobotMovement : MonoBehaviour
 {
     Rigidbody _rb;
-    
-    public Vector2 Target;
+    Queue<Vector2> _positionQueue = new();
 
     void Start()
     {
@@ -13,6 +13,6 @@ public class RobotMovement : MonoBehaviour
     }
     void FixedUpdate()
     {
-        var dt = Time.fixedDeltaTime;
+        
     }
 }
