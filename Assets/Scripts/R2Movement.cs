@@ -1,64 +1,54 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class R2Movement : MonoBehaviour
 {
-    [SerializeField] HingeJoint[] _rightWheels;
-    [SerializeField] HingeJoint[] _leftWheels;
-    [SerializeField] Rigidbody _base;
-    [SerializeField] float _forwardSpeed = 10, _turnSpeed = 10, _motorForce = 1000;
-    [SerializeField] float _minTargetDistance = 0.1f;
-    [SerializeField] float _minAllowedDot = 0.5f;
-    [SerializeField] float _minAllowedDegree = 1;
-    [SerializeField] List<Vector2> _targets = new();
+    private Rigidbody _rb;
 
-    public void AddTarget(Vector2 target) => _targets.Add(target);
+    [SerializeField] private List<Vector2> _targetLocations = new();
+    [SerializeField] private float _maxSpeed = 10.0f;
+    [SerializeField] private float _acceptableRadius = 0.1f;
+    [SerializeField] private float _acceptableAngle = 5.0f;
+    [SerializeField] private float _maxAngularSpeed = 10.0f;
+    [SerializeField] private float _acceleration = 1000.0f;
+    [SerializeField] private float _angularAcceleration = 1000.0f;
 
-    void SetMovement(float forward, float turn)
+    public void AddTarget(Vector2 target) => _targetLocations.Add(target);
+
+    void Start()
     {
-        Debug.Log($"Forward: {forward}, Turn: {turn}");
-        foreach (var wheel in _rightWheels)
-        {
-            var offset = wheel.transform.position - _base.transform.position;
-            var velocity = Vector3.Dot(offset * turn, wheel.transform.rotation * wheel.axis);
-            wheel.motor = new JointMotor()
-            {
-                force = _motorForce,
-                targetVelocity = velocity + forward
-            };
-        }
-        foreach (var wheel in _leftWheels)
-        {
-            var offset = wheel.transform.position - _base.transform.position;
-            var velocity = Vector3.Dot(offset, wheel.transform.rotation * wheel.axis) * turn + forward;
-            wheel.motor = new JointMotor()
-            {
-                force = _motorForce,
-                targetVelocity = velocity
-            };
-        }
+        _rb = GetComponent<Rigidbody>();
     }
-
     void FixedUpdate()
     {
-        if (_targets.Count == 0) {
-            SetMovement(0, 0);
-            return;
+        var dt = Time.fixedDeltaTime;
+        var linearVelocity = Vector3.zero;
+        var angularVelocity = Vector3.zero;
+
+        if (_targetLocations.Count != 0)
+        {
+            var target = _targetLocations[0];
+            var position = _rb.position;
+            var flatPosition = new Vector2(position.x, position.z);
+            var offset = target - flatPosition;
+            if (offset.sqrMagnitude < _acceptableRadius * _acceptableRadius)
+            {
+                _targetLocations.RemoveAt(0);
+                return;
+            }
+
+            var forward = transform.forward;
+            var flatForward = new Vector2(forward.x, forward.z).normalized;
+            var angle = Vector2.SignedAngle(flatForward, offset);
+            var dot = Vector2.Dot(flatForward, offset.normalized);
+            var linearSpeed = dot * _maxSpeed;
+            var angularSpeed = Mathf.Abs(angle) < _acceptableAngle ? 0 : Mathf.Sign(angle) * _maxAngularSpeed;
+            linearVelocity = linearSpeed * transform.forward;
+            angularVelocity = angularSpeed * Vector3.up;
         }
 
-        var target = _targets[0];
-        var position = _base.position;
-        var xzPosition = new Vector2(position.x, position.z);
-        var targetOffset = target - xzPosition;
-        if (targetOffset.sqrMagnitude < _minTargetDistance * _minTargetDistance) { // Equal
-            _targets.RemoveAt(0);
-            return;
-        }
-
-        var forward = _base.transform.forward;
-        var xzForward = new Vector2(forward.x, forward.z).normalized;
-        var angle = Vector2.SignedAngle(xzForward, targetOffset);
-        var dot = Vector2.Dot(xzForward, targetOffset.normalized);
-        SetMovement(dot >= _minAllowedDot ? dot * _forwardSpeed : 0, (angle >= _minAllowedDegree ? 1 : angle <= -_minAllowedDegree ? -1 : 0) * _turnSpeed);
+        _rb.linearVelocity = Vector3.MoveTowards(_rb.linearVelocity, linearVelocity, _acceleration * dt);
+        _rb.angularVelocity = Vector3.MoveTowards(_rb.angularVelocity, angularVelocity, _angularAcceleration * dt);
     }
 }
