@@ -720,8 +720,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 344f586b4ba9e724ea29fcbcccbd8b0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DatasetGenerator
-  _imageDirectory: .datasets/images/train
-  _labelDirectory: .datasets/labels/train
+  _imageDirectory: .datasets/images/test
+  _labelDirectory: .datasets/labels/test
 --- !u!1 &301407573
 GameObject:
   m_ObjectHideFlags: 0
@@ -1989,7 +1989,7 @@ MonoBehaviour:
   _offsetMax: {x: 0.2, y: 0.2}
   _distMin: 5
   _distMax: 10
-  _datasetCount: 4000
+  _datasetCount: 1000
   _spawnDuration: 0
 --- !u!1 &1832739095
 GameObject:

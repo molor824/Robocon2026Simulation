@@ -1,14 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class KfsSpawner : MonoBehaviour
 {
-    [SerializeField] Transform _kfsContainer;
-    [SerializeField] Vector2 _positionVariation = new(0.2f, 0.2f);
+    [SerializeField] private Transform _kfsContainer;
+    [SerializeField] private Vector2 _positionVariation = new(0.2f, 0.2f);
+    [SerializeField] private bool _random = true;
 
-    Transform[] _spawners;
-    Kfs[] _kfss;
-    List<Kfs> _activeKfss = new();
+    private Transform[] _spawners;
+    private Kfs[] _kfss;
+    private List<Kfs> _activeKfss = new();
 
     public IReadOnlyList<Kfs> ActiveKfss => _activeKfss;
 
@@ -26,10 +28,42 @@ public class KfsSpawner : MonoBehaviour
             _kfss[i].gameObject.SetActive(false);
         }
 
-        SpawnKfss();
+        if (_random)
+            SpawnRandomKfss();
     }
 
-    public void SpawnKfss()
+    public void SpawnKfsAt(int index, Kfs.Team team, Kfs.Type type)
+    {
+        var kfsOrder = new int[_kfss.Length];
+        for (int i = 0; i < kfsOrder.Length; i++)
+            kfsOrder[i] = i;
+        RandomExt.Shuffle(kfsOrder);
+
+        var spawner = _spawners[team switch
+        {
+            Kfs.Team.Red => index,
+            _ => 12 + index,
+        }];
+        Debug.Log(index);
+
+        for (int i = 0; i < kfsOrder.Length; i++)
+        {
+            var kfs = _kfss[kfsOrder[i]];
+            if (kfs.KfsTeam == team && kfs.KfsType == type)
+            {
+                var kfs1 = Instantiate(kfs);
+                var offset = RandomExt.RangeVec2(-_positionVariation, _positionVariation);
+
+                kfs1.gameObject.SetActive(true);
+                kfs1.transform.position = spawner.position + new Vector3(offset.x, 0.0f, offset.y);
+                kfs1.transform.rotation = Quaternion.AngleAxis(Random.Range(0.0f, 360.0f), Vector3.up) * spawner.rotation;
+                _activeKfss.Add(kfs1);
+                return;
+            }
+        }
+    }
+
+    public void SpawnRandomKfss()
     {
         var kfsOrder = new int[_kfss.Length];
         for (int i = 0; i < _kfss.Length; i++)

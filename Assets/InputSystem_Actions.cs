@@ -127,6 +127,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Yes"",
+                    ""type"": ""Button"",
+                    ""id"": ""74ff07f6-510c-438d-b46d-55f0d092fccc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""No"",
+                    ""type"": ""Button"",
+                    ""id"": ""a806f4d2-d21f-49dd-abe5-6f92729251d3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -325,6 +343,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""DatasetGen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""63dce127-1e34-4f12-a53f-5f3640f539f3"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Yes"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0c87bf28-a1be-4743-90f3-7f4667ac39d7"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""No"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -916,6 +956,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         m_Player_DatasetGen = m_Player.FindAction("DatasetGen", throwIfNotFound: true);
+        m_Player_Yes = m_Player.FindAction("Yes", throwIfNotFound: true);
+        m_Player_No = m_Player.FindAction("No", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1013,6 +1055,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Pause;
     private readonly InputAction m_Player_DatasetGen;
+    private readonly InputAction m_Player_Yes;
+    private readonly InputAction m_Player_No;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1040,6 +1084,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/DatasetGen".
         /// </summary>
         public InputAction @DatasetGen => m_Wrapper.m_Player_DatasetGen;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Yes".
+        /// </summary>
+        public InputAction @Yes => m_Wrapper.m_Player_Yes;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/No".
+        /// </summary>
+        public InputAction @No => m_Wrapper.m_Player_No;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1078,6 +1130,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DatasetGen.started += instance.OnDatasetGen;
             @DatasetGen.performed += instance.OnDatasetGen;
             @DatasetGen.canceled += instance.OnDatasetGen;
+            @Yes.started += instance.OnYes;
+            @Yes.performed += instance.OnYes;
+            @Yes.canceled += instance.OnYes;
+            @No.started += instance.OnNo;
+            @No.performed += instance.OnNo;
+            @No.canceled += instance.OnNo;
         }
 
         /// <summary>
@@ -1101,6 +1159,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DatasetGen.started -= instance.OnDatasetGen;
             @DatasetGen.performed -= instance.OnDatasetGen;
             @DatasetGen.canceled -= instance.OnDatasetGen;
+            @Yes.started -= instance.OnYes;
+            @Yes.performed -= instance.OnYes;
+            @Yes.canceled -= instance.OnYes;
+            @No.started -= instance.OnNo;
+            @No.performed -= instance.OnNo;
+            @No.canceled -= instance.OnNo;
         }
 
         /// <summary>
@@ -1429,6 +1493,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDatasetGen(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Yes" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnYes(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "No" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnNo(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

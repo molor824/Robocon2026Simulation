@@ -38,7 +38,7 @@ public class LabelUI : MonoBehaviour
     {
         for (int i = 0; i < _datasetCount;)
         {
-            _kfsSpawner.SpawnKfss();
+            _kfsSpawner.SpawnRandomKfss();
             _lightRandomizer.Randomize();
             yield return new WaitForSeconds(_spawnDuration);
 
