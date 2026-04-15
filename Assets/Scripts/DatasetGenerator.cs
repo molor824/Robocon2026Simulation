@@ -22,7 +22,6 @@ public class DatasetGenerator : MonoBehaviour
     public async Task<bool> GenerateDataset(IEnumerable<Kfs> kfss)
     {
         var labelContent = new StringBuilder();
-        var filename = new StringBuilder();
         foreach (var kfs in kfss)
         {
             var label = _labelGenerator.GenerateLabel(kfs.transform);
@@ -33,7 +32,6 @@ public class DatasetGenerator : MonoBehaviour
             var size = rect.size;
             var labelIndex = kfs.GetIndex();
             labelContent.AppendLine($"{labelIndex} {center.x} {center.y} {size.x} {size.y}");
-            filename.Append(filename.Length == 0 ? $"{labelIndex}" : $"-{labelIndex}");
         }
 
         if (labelContent.Length == 0)
@@ -50,8 +48,8 @@ public class DatasetGenerator : MonoBehaviour
         var guid = Guid.NewGuid();
         Destroy(tex);
         await Task.WhenAll(
-            File.WriteAllTextAsync($"{_labelDirectory}/{guid}_{filename}.txt", labelContent.ToString()),
-            File.WriteAllBytesAsync($"{_imageDirectory}/{guid}_{filename}.png", bytes)
+            File.WriteAllTextAsync($"{_labelDirectory}/{guid}.txt", labelContent.ToString()),
+            File.WriteAllBytesAsync($"{_imageDirectory}/{guid}.png", bytes)
         );
 
         return true;
