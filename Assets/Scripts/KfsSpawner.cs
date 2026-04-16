@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class KfsSpawner : MonoBehaviour
 {
+    private static readonly Vector2 Size = new(1.2f, 1.2f);
+
     [SerializeField] private Transform _kfsContainer;
     [SerializeField] private Vector2 _positionVariation = new(0.2f, 0.2f);
     [SerializeField] private bool _random = true;
@@ -13,6 +14,25 @@ public class KfsSpawner : MonoBehaviour
     private List<Kfs> _activeKfss = new();
 
     public IReadOnlyList<Kfs> ActiveKfss => _activeKfss;
+    public IReadOnlyList<Transform> Spawners => _spawners;
+
+    public Kfs AtSpawner(int index)
+    {
+        var spawner = _spawners[index];
+        var position = spawner.position;
+        var start = new Vector2(position.x, position.z) - Size * 0.5f;
+        var end = start + Size;
+
+        foreach (var kfs in _activeKfss)
+        {
+            var kfsPos = kfs.transform.position;
+            if (start.x <= kfsPos.x && end.x >= kfsPos.x && start.y <= kfsPos.z && end.y >= kfsPos.z)
+            {
+                return kfs;
+            }
+        }
+        return null;
+    }
 
     void Start()
     {

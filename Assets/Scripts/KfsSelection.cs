@@ -41,13 +41,13 @@ public class KfsSelection : MonoBehaviour
             {
                 if (_orders.Count == 0)
                 {
-                    _manager.RequestOngoing();
+                    _manager.FinishKfsSelection();
                     return;
                 }
                 _kfsSpawner.SpawnKfsAt(index, _manager.Team, _orders[0]);
                 _orders.RemoveAt(0);
                 if (_orders.Count == 0)
-                    _manager.RequestOngoing();
+                    _manager.FinishKfsSelection();
                 else
                     _kfsText.text = _orders[0] switch
                     {
