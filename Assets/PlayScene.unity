@@ -6643,8 +6643,6 @@ GameObject:
   - component: {fileID: 1823688466}
   - component: {fileID: 1823688465}
   - component: {fileID: 1823688468}
-  - component: {fileID: 1823688470}
-  - component: {fileID: 1823688469}
   - component: {fileID: 1823688471}
   m_Layer: 3
   m_Name: Main Camera
@@ -6866,41 +6864,6 @@ MonoBehaviour:
       data1: 0
       data2: 0
   defaultFrameSettings: 0
---- !u!114 &1823688469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1823688464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c14f8fa7e61cef888dda7f9431b0c6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LabelUI
-  _kfsSpawner: {fileID: 1311488779}
-  _lightRandomizer: {fileID: 0}
-  _datasetGenerator: {fileID: 0}
-  _rotMin: {x: -20, y: 0, z: -30}
-  _rotMax: {x: 20, y: 360, z: 30}
-  _offsetMin: {x: -0.2, y: -0.2}
-  _offsetMax: {x: 0.2, y: 0.2}
-  _distMin: 2
-  _distMax: 10
-  _datasetCount: 100
-  _spawnDuration: 0.05
---- !u!114 &1823688470
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1823688464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb29aea32f98c874a9ec011d8a36e414, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LabelGenerator
 --- !u!114 &1823688471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6914,8 +6877,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabKfs
   _manager: {fileID: 753764292}
-  _distance: 1
-  _grabDistance: 1
+  _distance: 1.5
+  _grabDistance: 0.8
 --- !u!1 &1831097359
 GameObject:
   m_ObjectHideFlags: 0
@@ -7125,7 +7088,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 0.4
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1843899190
 Rigidbody:
