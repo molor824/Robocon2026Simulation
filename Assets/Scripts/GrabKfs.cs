@@ -1,79 +1,52 @@
-using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GrabKfs : MonoBehaviour
 {
-    [SerializeField] private Transform _pivot0, _pivot1, _pivot2;
-    [SerializeField] private float _extendDuration = 1;
-    [SerializeField] private float _collapseDuration = 1;
-    [SerializeField] private Transform _raySource;
-    [SerializeField] private float _rayDistance = 2;
     [SerializeField] private GameStateManager _manager;
-    [SerializeField] private bool _grabbing;
+    [SerializeField] private float _distance = 1;
+    [SerializeField] private float _grabDistance = 1;
+
+    private InputAction _equipAction;
+    private Rigidbody _target;
 
     void Start()
     {
-        _pivot0.localEulerAngles = -45 * Vector3.right;
-        _pivot1.localEulerAngles = 45 * Vector3.right;
-    }
-
-    public void StartGrab()
-    {
-        if (_grabbing) return;
-        StartCoroutine(GrabCoroutine());
-    }
-
-    IEnumerator GrabCoroutine()
-    {
-        _grabbing = true;
-        float elapsed = 0;
-        while (elapsed < _extendDuration)
+        _equipAction = InputSystem.actions.FindAction("Equip");
+        _equipAction.started += ctx =>
         {
-            var t = elapsed / _extendDuration;
-            _pivot0.localEulerAngles = Vector3.right * Mathf.Lerp(-45, 45, t);
-            _pivot1.localEulerAngles = Vector3.right * Mathf.Lerp(45, -45, t);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        _pivot0.localEulerAngles = Vector3.right * 45;
-        _pivot1.localEulerAngles = Vector3.right * -45;
-
-        var hits = Physics.RaycastAll(_raySource.position, _raySource.forward, _rayDistance);
-        Transform targetKfs = null;
-        foreach (var hit in hits)
-        {
-            if (hit.transform.TryGetComponent(out Kfs kfs))
+            if (_target != null)
             {
-                if (kfs.KfsType != Kfs.Type.Real || kfs.KfsTeam != _manager.Team) break;
-                targetKfs = kfs.transform;
+                _target.isKinematic = false;
+                _target = null;
+                return;
             }
-        }
 
-        if (targetKfs == null)
-        {
-            _manager.RequestRetry();
-            _grabbing = false;
-            yield break;
-        }
+            var hits = Physics.RaycastAll(transform.position, transform.forward, _distance);
+            
+            foreach (var hit in hits)
+            {
+                Debug.Log(hit.transform);
+                if (!hit.transform.TryGetComponent(out Kfs kfs)) continue;
+                if (kfs.KfsTeam != _manager.Team || kfs.KfsType != Kfs.Type.R1) continue;
+                _target = kfs.GetComponent<Rigidbody>();
+                break;
+            }
 
-        var kfsRb = targetKfs.GetComponent<Rigidbody>();
-        kfsRb.Sleep();
+            if (_target == null) return;
+        };
+    }
 
-        targetKfs.SetParent(_pivot2);
-        targetKfs.position = _pivot2.position;
+    void Update()
+    {
+        if (_target == null) return;
 
-        elapsed = 0;
-        while (elapsed < _collapseDuration)
-        {
-            var t = elapsed / _collapseDuration;
-            _pivot0.localEulerAngles = Vector3.right * Mathf.Lerp(45, -45, t);
-            _pivot1.localEulerAngles = Vector3.right * Mathf.Lerp(-45, 45, t);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        _pivot0.localEulerAngles = Vector3.right * -45;
-        _pivot1.localEulerAngles = Vector3.right * 45;
+        _target.isKinematic = true;
 
-        _grabbing = false;
+        var rot = transform.eulerAngles;
+        _target.transform.position = transform.position + transform.forward * _grabDistance;
+        var targetRot = _target.transform.eulerAngles;
+        targetRot.y = rot.y;
+        _target.transform.eulerAngles = targetRot;
     }
 }

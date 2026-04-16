@@ -138,9 +138,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""No"",
+                    ""name"": ""Equip"",
                     ""type"": ""Button"",
-                    ""id"": ""a806f4d2-d21f-49dd-abe5-6f92729251d3"",
+                    ""id"": ""d8c62b1d-c149-47d0-b56b-9f4be9150caf"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -359,12 +359,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0c87bf28-a1be-4743-90f3-7f4667ac39d7"",
-                    ""path"": ""<Keyboard>/n"",
+                    ""id"": ""c4f93761-365c-4fb4-b14f-93e7d618b778"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""No"",
+                    ""action"": ""Equip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -957,7 +957,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         m_Player_DatasetGen = m_Player.FindAction("DatasetGen", throwIfNotFound: true);
         m_Player_Yes = m_Player.FindAction("Yes", throwIfNotFound: true);
-        m_Player_No = m_Player.FindAction("No", throwIfNotFound: true);
+        m_Player_Equip = m_Player.FindAction("Equip", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1056,7 +1056,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Pause;
     private readonly InputAction m_Player_DatasetGen;
     private readonly InputAction m_Player_Yes;
-    private readonly InputAction m_Player_No;
+    private readonly InputAction m_Player_Equip;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1089,9 +1089,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Yes => m_Wrapper.m_Player_Yes;
         /// <summary>
-        /// Provides access to the underlying input action "Player/No".
+        /// Provides access to the underlying input action "Player/Equip".
         /// </summary>
-        public InputAction @No => m_Wrapper.m_Player_No;
+        public InputAction @Equip => m_Wrapper.m_Player_Equip;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1133,9 +1133,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Yes.started += instance.OnYes;
             @Yes.performed += instance.OnYes;
             @Yes.canceled += instance.OnYes;
-            @No.started += instance.OnNo;
-            @No.performed += instance.OnNo;
-            @No.canceled += instance.OnNo;
+            @Equip.started += instance.OnEquip;
+            @Equip.performed += instance.OnEquip;
+            @Equip.canceled += instance.OnEquip;
         }
 
         /// <summary>
@@ -1162,9 +1162,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Yes.started -= instance.OnYes;
             @Yes.performed -= instance.OnYes;
             @Yes.canceled -= instance.OnYes;
-            @No.started -= instance.OnNo;
-            @No.performed -= instance.OnNo;
-            @No.canceled -= instance.OnNo;
+            @Equip.started -= instance.OnEquip;
+            @Equip.performed -= instance.OnEquip;
+            @Equip.canceled -= instance.OnEquip;
         }
 
         /// <summary>
@@ -1501,12 +1501,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnYes(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "No" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Equip" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnNo(InputAction.CallbackContext context);
+        void OnEquip(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

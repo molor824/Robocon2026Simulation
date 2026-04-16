@@ -52,9 +52,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "No",
+                    "name": "Equip",
                     "type": "Button",
-                    "id": "a806f4d2-d21f-49dd-abe5-6f92729251d3",
+                    "id": "d8c62b1d-c149-47d0-b56b-9f4be9150caf",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -273,12 +273,12 @@
                 },
                 {
                     "name": "",
-                    "id": "0c87bf28-a1be-4743-90f3-7f4667ac39d7",
-                    "path": "<Keyboard>/n",
+                    "id": "c4f93761-365c-4fb4-b14f-93e7d618b778",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "No",
+                    "action": "Equip",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
