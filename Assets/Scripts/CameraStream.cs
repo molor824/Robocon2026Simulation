@@ -10,7 +10,6 @@ public class CameraStream : MonoBehaviour
     Camera _camera;
     Task<byte[]> _streamTask;
     Texture2D _texture;
-    RenderTexture _renderTexture;
     byte[] _data;
 
     [SerializeField] string _url = "http://127.0.0.1:3445";
@@ -32,21 +31,16 @@ public class CameraStream : MonoBehaviour
             _streamTask.Dispose();
             _streamTask = null;
         }
-        if (_renderTexture == null || _renderTexture.width != Screen.width || _renderTexture.height != Screen.height)
-        {
-            if (_renderTexture != null) Destroy(_renderTexture);
-            _renderTexture = new(Screen.width, Screen.height, 16);
-            _camera.targetTexture = _renderTexture;
-        }
+        var rt = _camera.targetTexture;
         _camera.Render();
 
-        if (_texture == null || _texture.width != _renderTexture.width || _texture.height != _renderTexture.height)
+        if (_texture == null || _texture.width != rt.width || _texture.height != rt.height)
         {
             if (_texture != null) Destroy(_texture);
-            _texture = new(_renderTexture.width, _renderTexture.height, TextureFormat.RGB24, false);
+            _texture = new(rt.width, rt.height, TextureFormat.RGB24, false);
         }
-        RenderTexture.active = _renderTexture;
-        _texture.ReadPixels(new Rect(0, 0, _renderTexture.width, _renderTexture.height), 0, 0, false);
+        RenderTexture.active = rt;
+        _texture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0, false);
         var bytes = _texture.EncodeToPNG();
 
         _streamTask = StreamBytesAsync(bytes);

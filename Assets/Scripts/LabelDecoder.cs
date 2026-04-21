@@ -24,6 +24,8 @@ public class LabelDecoder : MonoBehaviour
     List<Label> _labels = new();
     [SerializeField] ListKfsIndices _kfsIndices;
 
+    public IReadOnlyList<Label> Labels => _labels;
+
     const int LabelSize = sizeof(byte) + sizeof(float) * 5;
 
     static float BytesToFloat(IReadOnlyList<byte> bytes, int start) => BitConverter.Int32BitsToSingle(

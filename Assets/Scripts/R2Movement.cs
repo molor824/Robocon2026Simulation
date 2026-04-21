@@ -23,9 +23,9 @@ public class R2Movement : MonoBehaviour
         _cc = GetComponent<CharacterController>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        var dt = Time.deltaTime;
+        var dt = Time.fixedDeltaTime;
         var linearVelocity = Vector3.zero;
         var angularVelocity = 0f;
 
