@@ -35,6 +35,7 @@ public class R2GrabKfs : MonoBehaviour
         if (_targetKfs != null) return;
         if (_grabbing) return;
         _grabbing = true;
+        _targetKfs = targetKfs.transform;
         _targetIndex = targetKfs.GetIndex();
         StartCoroutine(GrabCoroutine());
     }
@@ -85,23 +86,29 @@ public class R2GrabKfs : MonoBehaviour
 
             var hits = Physics.RaycastAll(camera.transform.position, offset.normalized, 10);
 
+            Transform newTargetKfs = null;
+
             foreach (var hit in hits)
             {
                 if (hit.transform.TryGetComponent(out Kfs kfs))
                 {
-                    _targetKfs = kfs.transform;
+                    newTargetKfs = kfs.transform;
                     break;
                 }
             }
 
-            if (_targetKfs == null)
+            if (newTargetKfs == null)
             {
                 Debug.LogWarning("No KFS Found in the detected KFS path...");
-                continue;
+                offset = _targetKfs.position - transform.position;
+                _movement.AddTarget(new(new(transform.position.x, transform.position.z), new Vector2(offset.x, offset.z).normalized));
             }
-
-            offset = _targetKfs.transform.position - transform.position;
-            _movement.AddTarget(new(new(transform.position.x, transform.position.z), new Vector2(offset.x, offset.z)));
+            else
+            {
+                _targetKfs = newTargetKfs;
+                offset = _targetKfs.transform.position - transform.position;
+                _movement.AddTarget(new(new(transform.position.x, transform.position.z), new Vector2(offset.x, offset.z)));
+            }
 
             break;
         }
