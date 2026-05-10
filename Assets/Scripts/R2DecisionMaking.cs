@@ -1,6 +1,7 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(R2Movement), typeof(R2GrabKfs))]
 public class R2DecisionMaking : MonoBehaviour
@@ -16,27 +17,43 @@ public class R2DecisionMaking : MonoBehaviour
         new(new(4.57f, 5.41f), Vector2.left),
         new(new(1.43f, 4.73f), Vector2.left),
     };
+    private static readonly int[] _ticCellOrder = {4, 3, 5};
+    private static readonly Ray2D[] _ticTarget =
+    {
+        new(new(0.75f, 4.75f), Vector2.left),
+        new(new(0.75f, 4.2f), Vector2.left),
+        new(new(0.75f, 5.3f), Vector2.left),
+    };
 
+    private InputAction _continueAction;
     private R2Movement _movement;
     private R2GrabKfs _grab;
+    private bool _continue = false;
     
     [SerializeField] private GameStateManager _manager;
     [SerializeField] private KfsSpawner _spawner;
-    [SerializeField] private float _waitTime = 2;
+    [SerializeField] private TicTacToe _ticTacToe;
+    [SerializeField] private CameraStream _cameraStream;
+    [SerializeField] private RawImage _rtImage;
 
     void Start()
     {
+        _continueAction = InputSystem.actions.FindAction("Continue");
+        _continueAction.started += _ => _continue = true;
         _movement = GetComponent<R2Movement>();
         _grab = GetComponent<R2GrabKfs>();
-        StartCoroutine(RunStates());
+        StartCoroutine(StateRoutine());
     }
     
-    IEnumerator RunStates()
+    IEnumerator StateRoutine()
     {
         // Setup
         Debug.Log("Setting up");
         yield return new WaitUntil(() => _manager.KfsFinished);
-        yield return new WaitForSeconds(_waitTime);
+        yield return new WaitUntil(() => _continue);
+
+        _cameraStream.gameObject.SetActive(true);
+        _rtImage.gameObject.SetActive(true);
 
         // Meihua
         Debug.Log("Entering meihua");
@@ -153,5 +170,24 @@ public class R2DecisionMaking : MonoBehaviour
             _movement.AddTarget(target);
         
         yield return new WaitUntil(() => _movement.Targets.Count == 0);
+
+        while (true) {
+            var found = false;
+            for (int i = 0; i < _ticCellOrder.Length; i++)
+            {
+                int cellIndex = _ticCellOrder[i];
+                var cell = _ticTacToe.Cells[cellIndex];
+                if (cell.GetKfs() != null) continue;
+
+                _movement.AddTarget(_ticTarget[i]);
+                found = true;
+                break;
+            }
+            if (found) break;
+
+            yield return null;
+        }
+        yield return new WaitUntil(() => _movement.Targets.Count == 0);
+        _grab.StartRelease();
     }
 }

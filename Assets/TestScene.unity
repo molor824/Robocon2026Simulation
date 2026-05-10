@@ -164,7 +164,6 @@ GameObject:
   - component: {fileID: 32030229}
   - component: {fileID: 32030230}
   - component: {fileID: 32030232}
-  - component: {fileID: 32030231}
   m_Layer: 3
   m_Name: StreamCamera
   m_TagString: Untagged
@@ -403,29 +402,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LabelDecoder
   _kfsIndices: {fileID: 705159393}
---- !u!114 &32030231
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 32030224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c14f8fa7e61cef888dda7f9431b0c6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LabelUI
-  _kfsSpawner: {fileID: 1311488779}
-  _lightRandomizer: {fileID: 0}
-  _datasetGenerator: {fileID: 0}
-  _rotMin: {x: -20, y: 0, z: -30}
-  _rotMax: {x: 20, y: 360, z: 30}
-  _offsetMin: {x: -0.2, y: -0.2}
-  _offsetMax: {x: 0.2, y: 0.2}
-  _distMin: 2
-  _distMax: 10
-  _datasetCount: 100
-  _spawnDuration: 0.05
 --- !u!114 &32030232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1554,6 +1530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::KfsSpawner
   _kfsContainer: {fileID: 2294092859192523971}
   _positionVariation: {x: 0.2, y: 0.2}
+  _random: 1
 --- !u!4 &1311488780
 Transform:
   m_ObjectHideFlags: 0
