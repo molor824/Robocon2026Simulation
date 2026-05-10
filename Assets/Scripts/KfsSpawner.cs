@@ -88,7 +88,8 @@ public class KfsSpawner : MonoBehaviour
         var kfsOrder = new int[_kfss.Length];
         for (int i = 0; i < _kfss.Length; i++)
             kfsOrder[i] = i;
-        RandomExt.Shuffle(kfsOrder);
+        RandomExt.Shuffle(kfsOrder, 0, _kfss.Length / 2);
+        RandomExt.Shuffle(kfsOrder, _kfss.Length / 2, _kfss.Length);
 
         foreach (var kfs in _kfss)
         {
@@ -97,7 +98,7 @@ public class KfsSpawner : MonoBehaviour
         _activeKfss.Clear();
         for (int i = 0; i < _spawners.Length; i++)
         {
-            var kfs = _kfss[kfsOrder[i]];
+            var kfs = _kfss[i >= _spawners.Length / 2 ? kfsOrder[i] : kfsOrder[i + _kfss.Length / 2]];
             var offset = RandomExt.RangeVec2(-_positionVariation, _positionVariation);
 
             kfs.gameObject.SetActive(true);

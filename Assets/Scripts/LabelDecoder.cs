@@ -66,13 +66,18 @@ public class LabelDecoder : MonoBehaviour
         {
             var kfs = _kfsIndices.GetKfs(label.Index);
             var box = ToGuiRect(label.Box);
+            
+            var color = Color.black;
 
-            GuiExt.DrawRectOutline(box, 2, Color.blue);
+            if (kfs.KfsTeam == Kfs.Team.Red && kfs.KfsType == Kfs.Type.Real) color = Color.red;
+            else if (kfs.KfsTeam == Kfs.Team.Blue && kfs.KfsType == Kfs.Type.Real) color = Color.blue;
+
+            GuiExt.DrawRectOutline(box, 2, color);
             EditorGUI.TextField(new Rect(box.x, box.y - 20, 100, 20), $"{kfs.name}: {label.Confidence * 100:0.}%", new GUIStyle()
             {
                 fontSize = 15,
                 alignment = TextAnchor.LowerLeft,
-                normal = new GUIStyleState { textColor = Color.blue }
+                normal = new GUIStyleState { textColor = color }
             });
         }
     }
