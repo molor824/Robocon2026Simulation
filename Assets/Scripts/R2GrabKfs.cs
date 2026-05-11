@@ -36,7 +36,7 @@ public class R2GrabKfs : MonoBehaviour
         if (_grabbing) return;
         _grabbing = true;
         _targetKfs = targetKfs.transform;
-        _targetIndex = targetKfs.GetIndex();
+        _targetIndex = targetKfs.Index;
         StartCoroutine(GrabCoroutine());
     }
     public void StartRelease()

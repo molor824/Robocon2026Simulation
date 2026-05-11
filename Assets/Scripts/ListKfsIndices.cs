@@ -14,7 +14,7 @@ public class ListKfsIndices : MonoBehaviour
         {
             var child = transform.GetChild(i);
             if (!child.TryGetComponent(out Kfs kfs)) continue;
-            var index = kfs.GetIndex();
+            var index = kfs.Index;
             _kfss[index] = kfs;
         }
 

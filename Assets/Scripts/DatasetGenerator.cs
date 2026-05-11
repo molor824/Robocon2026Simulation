@@ -19,18 +19,18 @@ public class DatasetGenerator : MonoBehaviour
         return new Rect(rect.x, 1 - rect.y - rect.height, rect.width, rect.height);
     }
 
-    public async Task<bool> GenerateDataset(IEnumerable<Kfs> kfss)
+    public async Task<bool> GenerateDataset(IEnumerable<ClassIndex> objects)
     {
         var labelContent = new StringBuilder();
-        foreach (var kfs in kfss)
+        foreach (var obj in objects)
         {
-            var label = _labelGenerator.GenerateLabel(kfs.transform);
+            var label = _labelGenerator.GenerateLabel(obj.GetComponent<MeshFilter>());
             if (!label.HasValue) continue;
 
             var rect = InvertY(label.Value);
             var center = rect.center;
             var size = rect.size;
-            var labelIndex = kfs.GetIndex();
+            var labelIndex = obj.Index;
             labelContent.AppendLine($"{labelIndex} {center.x} {center.y} {size.x} {size.y}");
         }
 

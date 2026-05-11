@@ -1,5 +1,5 @@
 using System.Collections;
-using UnityEditor;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -12,6 +12,7 @@ public class LabelUI : MonoBehaviour
     LabelGenerator _labelGenerator;
 
     [SerializeField] KfsSpawner _kfsSpawner;
+    [SerializeField] SpearheadSpawner _spearheadSpawner;
     [SerializeField] LightRandomizer _lightRandomizer;
     [SerializeField] DatasetGenerator _datasetGenerator;
     [SerializeField] Vector3 _rotMin = new(-20, 0, -30), _rotMax = new(20, 360, 30);
@@ -24,7 +25,7 @@ public class LabelUI : MonoBehaviour
     {
         _labelGenerator = GetComponent<LabelGenerator>();
         _generateAction = InputSystem.actions.FindAction("DatasetGen");
-        _generateAction.performed += _ => 
+        _generateAction.performed += _ =>
         {
             if (!_generating)
             {
@@ -39,6 +40,7 @@ public class LabelUI : MonoBehaviour
         for (int i = 0; i < _datasetCount;)
         {
             _kfsSpawner.SpawnRandomKfss();
+            _spearheadSpawner.SpawnRandom();
             _lightRandomizer.Randomize();
             yield return new WaitForSeconds(_spawnDuration);
 
@@ -50,24 +52,25 @@ public class LabelUI : MonoBehaviour
             var cameraOffset = qrot * (Vector3.forward + (Vector3)offset) * dist;
             generator.transform.SetPositionAndRotation(transform.position - cameraOffset, qrot);
 
-            var task = generator.GenerateDataset(_kfsSpawner.ActiveKfss);
+            var task = generator.GenerateDataset(Enumerable.Concat<ClassIndex>(_kfsSpawner.ActiveKfss, _spearheadSpawner.SpawnedSpears));
             yield return new WaitUntil(() => task.IsCompleted);
             if (task.Result) i++;
         }
         _generating = false;
     }
-    
+
     void OnGUI()
     {
-        foreach (var kfs in _kfsSpawner.ActiveKfss)
+        var enumerator = Enumerable.Concat<ClassIndex>(_kfsSpawner.ActiveKfss, _spearheadSpawner.SpawnedSpears);
+        foreach (var obj in enumerator)
         {
-            var rect = _labelGenerator.GenerateLabel(kfs.transform);
+            var rect = _labelGenerator.GenerateLabel(obj.GetComponent<MeshFilter>());
             if (rect.HasValue)
             {
                 var uiRect = LabelGenerator.ToGuiRect(rect.Value);
 
                 GuiExt.DrawRectOutline(uiRect, 2, Color.green);
-                GUI.Label(new Rect(uiRect.x, uiRect.y + uiRect.height, 100, 20), kfs.name, new GUIStyle()
+                GUI.Label(new Rect(uiRect.x, uiRect.y + uiRect.height, 100, 20), obj.name, new GUIStyle()
                 {
                     fontSize = 15,
                     alignment = TextAnchor.UpperRight,

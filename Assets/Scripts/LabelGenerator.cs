@@ -5,37 +5,36 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class LabelGenerator : MonoBehaviour
 {
-    Camera _camera;
+    private Camera _camera;
 
-    public Rect? GenerateLabel(Transform kfs)
+    public Rect? GenerateLabel(MeshFilter meshFilter)
     {
-        var offset = transform.position - kfs.position;
-        var hit = Physics.Raycast(kfs.position, offset.normalized, offset.magnitude, 1);
+        var offset = transform.position - meshFilter.transform.position;
+        var hit = Physics.Raycast(meshFilter.transform.position, offset.normalized, offset.magnitude, 1);
 
         if (hit) return null;
 
-        var kfsMesh = kfs.GetComponent<MeshFilter>();
-        var kfsBounds = kfsMesh.sharedMesh.bounds;
-        var kfsMin = kfsBounds.min;
-        var kfsMax = kfsBounds.max;
+        var bounds = meshFilter.sharedMesh.bounds;
+        var min = bounds.min;
+        var max = bounds.max;
         var corners = Enumerable.Range(0, 8).Select(i =>
         {
-            var corner = kfs.TransformPoint(new Vector3(
-                (i & 1) == 0 ? kfsMin.x : kfsMax.x,
-                (i & 2) == 0 ? kfsMin.y : kfsMax.y,
-                (i & 4) == 0 ? kfsMin.z : kfsMax.z
+            var corner = meshFilter.transform.TransformPoint(new Vector3(
+                (i & 1) == 0 ? min.x : max.x,
+                (i & 2) == 0 ? min.y : max.y,
+                (i & 4) == 0 ? min.z : max.z
             ));
             return _camera.WorldToViewportPoint(corner);
         });
         if (corners.Any(corner => corner.z <= 0))
             return null;
 
-        var xmin = corners.Min(corner => corner.x);
-        var ymin = corners.Min(corner => corner.y);
-        var xmax = corners.Max(corner => corner.x);
-        var ymax = corners.Max(corner => corner.y);
+        var xmin = corners.Min(v => v.x);
+        var ymin = corners.Min(v => v.y);
+        var xmax = corners.Max(v => v.x);
+        var ymax = corners.Max(v => v.y);
 
-        if (!float.IsFinite(xmin) || !float.IsFinite(ymin) || !float.IsFinite(xmax) || !float.IsFinite(ymax))
+        if (float.IsInfinity(xmin) || float.IsInfinity(ymin) || float.IsInfinity(xmax) || float.IsInfinity(ymax))
             return null;
 
         var xcenter = (xmin + xmax) / 2;

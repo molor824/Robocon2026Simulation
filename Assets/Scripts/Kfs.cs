@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Kfs : MonoBehaviour
+public class Kfs : ClassIndex
 {
     public enum Type
     {
@@ -27,16 +27,19 @@ public class Kfs : MonoBehaviour
     // 31-45 Blue Real
     // 46-60 Blue Fake
     // 61 Blue R1
-    public int GetIndex()
+    public override int Index
     {
-        var index = KfsIndex;
-        if (KfsType == Type.Fake)
-            index += 15;
-        else if (KfsType == Type.R1)
-            index = 30;
-        if (KfsTeam == Team.Blue)
-            index += 31;
-        return index;
+        get
+        {
+            var index = KfsIndex;
+            if (KfsType == Type.Fake)
+                index += 15;
+            else if (KfsType == Type.R1)
+                index = 30;
+            if (KfsTeam == Team.Blue)
+                index += 31;
+            return index;
+        }
     }
 
     public const int MaxIndex = 30 + 31;
