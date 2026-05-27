@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpearheadSpawner : MonoBehaviour
 {
     [SerializeField] private Spearhead[] _spearheads;
+    [SerializeField] private float _minGray = 0.2f, _maxGray = 0.6f;
 
     private List<Spearhead> _spawnedSpears = new();
 
@@ -31,7 +33,8 @@ public class SpearheadSpawner : MonoBehaviour
             spearhead.transform.position = transform.GetChild(i).position;
             spearhead.transform.Rotate(Vector3.up * Random.Range(0f, 360f));
             var meshRenderer = spearhead.GetComponent<MeshRenderer>();
-            meshRenderer.material.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+            var grey = Random.Range(_minGray, _maxGray);
+            meshRenderer.material.color = new Color(grey, grey, grey);
 
             _spawnedSpears.Add(spearhead);
         }

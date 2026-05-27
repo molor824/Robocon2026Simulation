@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -39,8 +40,8 @@ public class LabelUI : MonoBehaviour
     {
         for (int i = 0; i < _datasetCount;)
         {
-            _kfsSpawner.SpawnRandomKfss();
-            _spearheadSpawner.SpawnRandom();
+            _kfsSpawner?.SpawnRandomKfss();
+            _spearheadSpawner?.SpawnRandom();
             _lightRandomizer.Randomize();
             yield return new WaitForSeconds(_spawnDuration);
 
@@ -52,17 +53,18 @@ public class LabelUI : MonoBehaviour
             var cameraOffset = qrot * (Vector3.forward + (Vector3)offset) * dist;
             generator.transform.SetPositionAndRotation(transform.position - cameraOffset, qrot);
 
-            var task = generator.GenerateDataset(Enumerable.Concat<ClassIndex>(_kfsSpawner.ActiveKfss, _spearheadSpawner.SpawnedSpears));
+            var task = generator.GenerateDataset(GetObjects());
             yield return new WaitUntil(() => task.IsCompleted);
             if (task.Result) i++;
         }
         _generating = false;
     }
 
+    private IEnumerable<ClassIndex> GetObjects() => Enumerable.Concat(_kfsSpawner?.ActiveKfss ?? Enumerable.Empty<ClassIndex>(), _spearheadSpawner?.SpawnedSpears ?? Enumerable.Empty<ClassIndex>());
+
     void OnGUI()
     {
-        var enumerator = Enumerable.Concat<ClassIndex>(_kfsSpawner.ActiveKfss, _spearheadSpawner.SpawnedSpears);
-        foreach (var obj in enumerator)
+        foreach (var obj in GetObjects())
         {
             var rect = _labelGenerator.GenerateLabel(obj.GetComponent<MeshFilter>());
             if (rect.HasValue)

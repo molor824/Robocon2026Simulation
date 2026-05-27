@@ -1510,6 +1510,8 @@ MonoBehaviour:
   - {fileID: 8312715961874436042}
   - {fileID: 8426731857362404500}
   - {fileID: 7471325765361329394}
+  _minGray: 0.2
+  _maxGray: 0.6
 --- !u!1 &895426757
 GameObject:
   m_ObjectHideFlags: 0
@@ -1650,7 +1652,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1311488779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2190,7 +2192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c14f8fa7e61cef888dda7f9431b0c6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LabelUI
-  _kfsSpawner: {fileID: 1311488779}
+  _kfsSpawner: {fileID: 0}
   _spearheadSpawner: {fileID: 883976704}
   _lightRandomizer: {fileID: 157207116}
   _datasetGenerator: {fileID: 274223129}
@@ -2198,9 +2200,9 @@ MonoBehaviour:
   _rotMax: {x: 30, y: 360, z: 30}
   _offsetMin: {x: -0.2, y: -0.2}
   _offsetMax: {x: 0.2, y: 0.2}
-  _distMin: 2
+  _distMin: 0.5
   _distMax: 4
-  _datasetCount: 1000
+  _datasetCount: 100
   _spawnDuration: 0
 --- !u!1 &1832739095
 GameObject:
