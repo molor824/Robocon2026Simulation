@@ -1,0 +1,3 @@
+[submodule "Robocon2026-ML"]
+	path = Robocon2026-ML
+	url = https://github.com/molor824/Robocon2026-ML

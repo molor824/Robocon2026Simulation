@@ -2,9 +2,26 @@
 
 ABU Robocon 2026 тэмцээний стратеги боловсруулах, тестлэх зориулалт бүхий Unity симуляци. KFS (Korean Flag Symbol) байрлуулах, Мэйхуа зам туулах, Tic-tac-toe самбар дээр байрлал эзэлх зэрэг тэмцээний үндсэн механикуудыг дуурайлган гүйцэтгэнэ.
 
+Симуляци нь **[Robocon2026-ML](Robocon2026-ML/)** sub-repo-той хамт ажилладаг: Unity симуляци датасет үүсгэж, ML sub-repo тухайн датасет дээр YOLO загвар сургаж, дараа нь HTTP сервераар таамаглал буцааж роботод дамжуулна.
+
+---
+
+## Репозиторийн бүтэц
+
+```
+Robocon2026Simulation/   ← Unity симуляци (энэ repo)
+└── Robocon2026-ML/      ← ML sub-repo (git submodule)
+    ├── train.py         ← YOLO загвар сургах
+    ├── predict-http.py  ← HTTP inference сервер (port 3445)
+    ├── data.yaml        ← 65 классын датасет тохиргоо
+    └── datasets/        ← Unity-с үүссэн зургууд (автоматаар үүснэ)
+```
+
 ---
 
 ## Ашигласан технологи
+
+### Unity симуляци
 
 | Технологи | Хувилбар |
 |---|---|
@@ -15,6 +32,15 @@ ABU Robocon 2026 тэмцээний стратеги боловсруулах, �
 | Visual Scripting | 1.9.8 |
 | Хэл | C# (.NET) |
 
+### ML sub-repo ([Robocon2026-ML](Robocon2026-ML/))
+
+| Технологи | Зориулалт |
+|---|---|
+| Python 3 | Үндсэн хэл |
+| Ultralytics YOLO | Объект илрүүлэлт (65 класс) |
+| Pillow / OpenCV | Зураг боловсруулалт |
+| HTTP сервер | Unity-с зураг хүлээн авч таамаглал буцаах |
+
 ---
 
 ## Суулгах болон ажиллуулах заавар
@@ -23,20 +49,39 @@ ABU Robocon 2026 тэмцээний стратеги боловсруулах, �
 
 - Unity Hub суулгасан байх
 - Unity **6000.2.10f1** хувилбар (Hub-аар суулгана)
+- Python **3.10+** (ML sub-repo-д)
 - Linux x86\_64 эсвэл Windows платформ
 
-### Алхамууд
+### 1. Clone (submodule-тай хамт)
 
-1. Repository-г clone хийх:
-   ```bash
-   git clone https://github.com/<org>/Robocon2026Simulation.git
-   ```
-2. Unity Hub → **Open** → clone хийсэн хавтасыг сонгоно.
-3. Unity шаардлагатай пакетуудыг автоматаар татна (Packages/manifest.json).
-4. `Assets/PlayScene.unity` дүрслэлийг нээнэ.
-5. **Play** дарж симуляцийг эхлүүлнэ.
+```bash
+git clone --recurse-submodules https://github.com/molor824/Robocon2026Simulation.git
+```
 
-> Camera stream функцийг ашиглахын тулд `http://127.0.0.1:3445` хаягаар хариу өгөх дүрс боловсруулах сервер ажиллаж байх ёстой.
+Хэрэв аль хэдийн clone хийсэн бол:
+
+```bash
+git submodule update --init --recursive
+```
+
+### 2. ML сервер тохируулах
+
+```bash
+cd Robocon2026-ML
+pip install ultralytics pillow
+python predict-http.py
+```
+
+Сервер `http://localhost:3445` дээр эхэлнэ. Unity Camera stream энэ хаягт зураг илгээж таамаглал авна.
+
+> Загвар сургахын тулд эхлээд Unity PlayScene-д датасет үүсгэж, дараа нь `python train.py` ажиллуулна.
+
+### 3. Unity симуляци ажиллуулах
+
+1. Unity Hub → **Open** → clone хийсэн үндсэн хавтасыг сонгоно.
+2. Unity шаардлагатай пакетуудыг автоматаар татна.
+3. `Assets/PlayScene.unity` дүрслэлийг нээнэ.
+4. **Play** дарж симуляцийг эхлүүлнэ.
 
 ---
 
@@ -55,13 +100,21 @@ R2 робот Мэйхуа замаар зөв гарц сонгон KFS авч,
 9 нүдтэй самбар дахь KFS байрлуулах дарааллыг удирдах (`TicTacToe`, `TicTacCell`).
 
 ### Camera stream & Dataset generation
-Robot-ын камераас PNG зургийг `http://127.0.0.1:3445` рүү POST хүсэлтээр дамжуулах ба YOLO форматтай label файл үүсгэх (`CameraStream`, `DatasetGenerator`, `LabelGenerator`).
+Unity-н камераас PNG зургийг `http://127.0.0.1:3445` рүү POST хүсэлтээр дамжуулж, `Robocon2026-ML/predict-http.py` серверээс класс + bbox хариу авна. `DatasetGenerator` нь YOLO форматтай `.txt` label болон `.png` зураг хосоор үүсгэж хадгална (`CameraStream`, `DatasetGenerator`, `LabelGenerator`).
 
 ### Тоглоомын төлөв удирдлага
 3 минутын хугацааны тоолуур, дахин эхлүүлэх болон дуусгах логик, KFS тохируулгын дараалал (`GameStateManager`).
 
 ### Эхний биеийн харагч (Spectator)
 WASD + хулгана удирдлагатай чөлөөт камер, түр зогсоох горим (`Movement`).
+
+---
+
+## Гишүүд
+
+| Нэр | Оюутны дугаар |
+|---|---|
+| М.Молор | s21c019b |
 
 ---
 
